@@ -1,41 +1,81 @@
 package behaviours.flood;
 
 import mas.HunterAgent;
+import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
+import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import java.util.Set;
+import java.util.HashSet;
 
 public class CatchEchoBehaviour extends SimpleBehaviour {
 	private static final long serialVersionUID = -8002056159166717857L;
 	private boolean finished = false;
 	private HunterAgent agent;
-	private MessageTemplate msgTemplate;
+	private String protocol;
 	
-	public CatchEchoBehaviour(HunterAgent agent, MessageTemplate msgTemplate){
+	public CatchEchoBehaviour(HunterAgent agent, String protocol){
 		super(agent);
 		this.agent = agent;
-		this.msgTemplate = msgTemplate;
+		this.protocol = protocol;
 	}
 	
 	@Override
 	public void action() {
-		//reception de l'echo des enfants
-				//	stock l'utilite de l'enfant
-		
-		//finished = true
+		final MessageTemplate msgTemplate = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM_REF), MessageTemplate.MatchProtocol(this.protocol));
+		final ACLMessage msg = agent.receive(msgTemplate);
+		Flood flood = this.agent.getFlood(protocol);
+		if(msg != null){
+			flood.setUtility(msg.getSender().getLocalName(), Integer.parseInt(msg.getContent()));
+			if(flood.hasAllUtilities())
+				finished = true;
+			else
+				block();
+		}else
+			block();
+
 	}
 
 	@Override
 	public boolean done() {
-		//si racine:
-			//elit le meilleur
-			//dismiss le reste
-			//lance le resultat avec info sur le meilleur
-		
-		//si pas racine:
-			//decide du meilleur entre fils et soi meme
-			//envoit un dismiss aux fils rejetes
-			//met a jour l'objet flood
-			//lance transmitEcho
+		if(finished){
+			Flood flood = this.agent.getFlood(protocol);
+			String best = flood.getBestId();
+			
+
+			final ACLMessage msgDismiss = new ACLMessage(ACLMessage.REQUEST);
+			msgDismiss.setProtocol(this.protocol);
+			msgDismiss.setSender(this.agent.getAID());
+			
+			Set<String> removeChildren = new HashSet<String>();
+			
+			for(String child : flood.getChildren()){
+				if(!child.equals(best)){
+					msgDismiss.addReceiver(new AID(child, AID.ISLOCALNAME));
+					removeChildren.add(child);
+				}
+			}	
+			flood.removeAll(removeChildren);
+			msgDismiss.setContent("dismiss");
+			agent.sendMessage(msgDismiss);
+			
+			if(!flood.hasParent() && best.equals(this.agent.getLocalName())){
+				System.out.println("je ramasse");
+				this.agent.pick();
+				this.agent.setStandBy(false);
+			}
+			else if(!flood.hasParent() && !best.equals(this.agent.getLocalName())){
+				final ACLMessage msgAccept = new ACLMessage(ACLMessage.REQUEST);
+				msgAccept.setProtocol(this.protocol);
+				msgAccept.setSender(this.agent.getAID());
+				msgAccept.addReceiver(new AID(best, AID.ISLOCALNAME));
+				msgAccept.setContent("accept_" + this.agent.getCurrentPosition());
+				agent.sendMessage(msgAccept);
+			}
+			else if(flood.hasParent()){
+				this.agent.addBehaviour(new TransmitEchoBehaviour(agent, protocol));
+			}
+		}
 		return finished;
 	}
 

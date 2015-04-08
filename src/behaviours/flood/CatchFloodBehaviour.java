@@ -42,7 +42,6 @@ public class CatchFloodBehaviour extends SimpleBehaviour {
 				
 				agent.addBehaviour(new RegisterParentBehaviour(agent, flood.getId()));
 			} catch (UnreadableException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}else{

@@ -30,6 +30,7 @@ public class HunterAgent extends abstractAgent {
 	protected boolean randomWalk = false;
 	protected boolean standBy = false;
 	private HashMap<String, Flood> floods;
+	private int capacity;
 	
 	/**
 	 * This method is automatically called when "agent".start() is executed.
@@ -42,6 +43,7 @@ public class HunterAgent extends abstractAgent {
 	protected void setup(){
 
 		super.setup();
+		this.capacity = getBackPackFreeSpace();
 		this.teamMates = new HashMap<String, String>();
 		this.floods = new HashMap<String, Flood>();
 		//Map UI settings
@@ -185,4 +187,13 @@ public class HunterAgent extends abstractAgent {
 		
 		return !teamMates.isEmpty();
 	}
+
+	public void removeFlood(String protocol) {
+		this.floods.remove(protocol);
+	}
+
+	public int getCapacity() {
+		return capacity;
+	}
+
 }

@@ -47,13 +47,16 @@ public class RegisterChildrenBehaviour extends SimpleBehaviour {
 
 	@Override
 	public boolean done() {
-		//if finished and childrend >0 and parent > 0:
-			//lance la behaviour CatchEcho avec le bon template
-		//if finished et parent mais pas enfants:
-			//mettre a jour l'objet flood avec sa propre utilite
-			//lancer echo (feuille)
-		//if finished et pas de parents et pas d'enfants:
-		//	standby : false (racine sans enfants)
+		if(finished && this.agent.getFlood(protocol).hasChild() && this.agent.getFlood(protocol).hasParent())
+			this.agent.addBehaviour(new CatchEchoBehaviour(agent, protocol));
+		
+		else if(finished && !this.agent.getFlood(protocol).hasChild() && this.agent.getFlood(protocol).hasParent()){
+			this.agent.getFlood(protocol).setUtility(this.agent.getCapacity() - this.agent.getBackPackFreeSpace());
+			this.agent.addBehaviour(new TransmitEchoBehaviour(agent, protocol));
+		}
+		else if(finished & !this.agent.getFlood(protocol).hasChild() && !this.agent.getFlood(protocol).hasParent())
+			this.agent.setStandBy(false);
+		
 		return finished;
 	}
 

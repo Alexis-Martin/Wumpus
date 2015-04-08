@@ -1,15 +1,15 @@
 package behaviours.flood;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
-public class TreasureFlood implements Flood {
+public class TreasureFlood extends AbstractFlood {
 	private static final long serialVersionUID = 660947212581865645L;
-	private String id;
-	private List<String> children;
-	private String parent;
+
 	
-	public TreasureFlood(String id){
-		this.id = id;
+	public TreasureFlood(String id, double myUtility){
+		super(id, myUtility);
 	}
 
 	@Override
@@ -18,23 +18,6 @@ public class TreasureFlood implements Flood {
 		return null;
 	}
 
-	@Override
-	public String getParentId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<String> getChildren() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public String getBestChild() {
@@ -75,6 +58,59 @@ public class TreasureFlood implements Flood {
 	@Override
 	public void addChild(String child) {
 		this.children.add(child);
+	}
+
+	@Override
+	public boolean hasChild() {
+		return !children.isEmpty();
+	}
+
+	@Override
+	public boolean hasParent() {
+		
+		return (this.parent == null)?false:true;
+	}
+
+	@Override
+	public void removeAll(Set<String> removeChildren) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getBestId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasAllUtilities() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setUtility(String localName, int parseInt) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setUtility(int i) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Set<String> getChildren() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	Flood clone() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
