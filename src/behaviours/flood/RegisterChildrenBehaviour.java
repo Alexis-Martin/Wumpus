@@ -51,7 +51,7 @@ public class RegisterChildrenBehaviour extends SimpleBehaviour {
 			this.agent.addBehaviour(new CatchEchoBehaviour(agent, protocol));
 		
 		else if(finished && !this.agent.getFlood(protocol).hasChild() && this.agent.getFlood(protocol).hasParent()){
-			this.agent.getFlood(protocol).setUtility(this.agent.getCapacity() - this.agent.getBackPackFreeSpace());
+			this.agent.getFlood(protocol).setUtility(this.agent.getBackPackFreeSpace());
 			this.agent.addBehaviour(new TransmitEchoBehaviour(agent, protocol));
 		}
 		else if(finished & !this.agent.getFlood(protocol).hasChild() && !this.agent.getFlood(protocol).hasParent())

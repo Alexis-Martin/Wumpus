@@ -20,97 +20,49 @@ public class TreasureFlood extends AbstractFlood {
 
 
 	@Override
-	public String getBestChild() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getParentPos() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Flood transmitFlood(String parentId, String parentPos) {
-		// TODO Auto-generated method stub
-		return null;
+		Flood flood = clone();
+		flood.setParentPos(parentPos);
+		flood.setParentId(parentId);
+		flood.setUtility(0);
+		flood.removeAllChild();
+		return flood;
 	}
-
+	
 	@Override
-	public void setParent(String parent) {
-		// TODO Auto-generated method stub
+	public String getBestChild() {
+		String bestChild = null;
+		double best = 0;
 		
+		for(String child: children.keySet()){
+			
+			if(best == 0 || children.get(child) > best){
+				bestChild = child;
+				best = children.get(child);
+			}
+		}
+		return bestChild;
 	}
 
-	@Override
-	public Object getAttribute(String attr) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setAttribute(String attr, Object obj) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void addChild(String child) {
-		this.children.add(child);
-	}
-
-	@Override
-	public boolean hasChild() {
-		return !children.isEmpty();
-	}
-
-	@Override
-	public boolean hasParent() {
-		
-		return (this.parent == null)?false:true;
-	}
-
-	@Override
-	public void removeAll(Set<String> removeChildren) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public String getBestId() {
-		// TODO Auto-generated method stub
+		String bestChild = getBestChild();
+		if(children.get(bestChild) > myUtility)
+			return bestChild;
 		return null;
 	}
 
-	@Override
-	public boolean hasAllUtilities() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void setUtility(String localName, int parseInt) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setUtility(int i) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Set<String> getChildren() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	Flood clone() {
-		// TODO Auto-generated method stub
-		return null;
+	public Flood clone() {
+		TreasureFlood flood = new TreasureFlood(id, myUtility);
+		flood.setChildrenHashMap((HashMap<String, Double>) children.clone());
+		flood.setParentId(getParentId());
+		flood.setParentPos(getParentPos());
+		flood.setAttributes(attributes);
+		return flood;
 	}
 
 }

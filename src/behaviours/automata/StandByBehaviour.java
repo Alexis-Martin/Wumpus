@@ -19,7 +19,7 @@ public class StandByBehaviour extends OneShotBehaviour {
 		this.nextState = 0;
 		if(agent.isStandBy()){
 			//Check wumpus...
-			System.out.println(agent.getLocalName() + " is on stand by");
+			//System.out.println(agent.getLocalName() + " is on stand by");
 			block(this.timeout);
 		}else{
 			this.nextState = 1;

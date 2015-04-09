@@ -14,6 +14,7 @@ import behaviours.automata.MoveBehaviour;
 import behaviours.automata.ObserveBehaviour;
 import behaviours.automata.StandByBehaviour;
 import behaviours.automata.TreasureHuntBehaviour;
+import behaviours.flood.CatchFloodBehaviour;
 import behaviours.flood.Flood;
 import env.Environment;
 
@@ -43,7 +44,6 @@ public class HunterAgent extends abstractAgent {
 	protected void setup(){
 
 		super.setup();
-		this.capacity = getBackPackFreeSpace();
 		this.teamMates = new HashMap<String, String>();
 		this.floods = new HashMap<String, Flood>();
 		//Map UI settings
@@ -55,7 +55,7 @@ public class HunterAgent extends abstractAgent {
 				 + "node.open{fill-color:grey;}"
 				 + "node.treasure{stroke-mode:plain; stroke-color:yellow; stroke-width:3;}";
 		map.addAttribute("ui.stylesheet", stylesheet);
-		
+//		this.capacity = getBackPackFreeSpace();
 		diff = new Map(this.getLocalName()+"_diff", false);
 		//diff.addAttribute("ui.stylesheet", stylesheet);
 		
@@ -101,7 +101,7 @@ public class HunterAgent extends abstractAgent {
 		addBehaviour(dispach_behaviour);
 		addBehaviour(new PushMapBehaviour(this));
 		addBehaviour(new PullMapBehaviour(this));
-
+		addBehaviour(new CatchFloodBehaviour(this));
 		System.out.println("the agent "+this.getLocalName()+ " is started");
 
 	}

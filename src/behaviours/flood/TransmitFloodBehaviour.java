@@ -21,6 +21,7 @@ public class TransmitFloodBehaviour extends SimpleBehaviour {
 
 	@Override
 	public void action() {
+		System.out.println(this.agent.getLocalName() + " Va envoyer le message de flood");
 		final ACLMessage msg = new ACLMessage(ACLMessage.PROPAGATE);
 		msg.setProtocol("flood");
 		msg.setSender(this.agent.getAID());		
@@ -33,6 +34,7 @@ public class TransmitFloodBehaviour extends SimpleBehaviour {
 			e.printStackTrace();
 		}
 		this.agent.sendMessage(msg);
+		System.out.println(this.agent.getLocalName() + " a envoyer un message flood");
 		this.agent.addBehaviour(new RegisterChildrenBehaviour(agent, protocol));
 		finished = true;
 	}

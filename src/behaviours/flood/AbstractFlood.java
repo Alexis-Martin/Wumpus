@@ -7,18 +7,20 @@ import java.util.Set;
 abstract class AbstractFlood implements Flood {
 	
 	private static final long serialVersionUID = 660947212581865645L;
-	private String id;
-	private double myUtility;
-	private HashMap<String, Double> children;
-	private String parentPos, parentId;
-	private HashMap<String, Object> attributes;
+	protected String id;
+	protected double myUtility;
+	protected HashMap<String, Double> children;
+	protected String parentPos, parentId;
+	protected HashMap<String, Object> attributes;
 	
 	public AbstractFlood(String id, double myUtility){
 		this.id = id;
 		this.myUtility = myUtility;
+		this.attributes = new HashMap<String, Object>();
+		this.children= new HashMap<String, Double>();
 	}
 	@Override
-	abstract String getMessage();
+	public abstract String getMessage();
 
 	@Override
 	public String getParentId() {
@@ -30,6 +32,24 @@ abstract class AbstractFlood implements Flood {
 		
 		return parentPos;
 	}
+	
+	public HashMap<String, Double> getChildrenHashMap(){
+		return children;
+	}
+	
+	public void setChildrenHashMap(HashMap<String, Double> children){
+		this.children = children;
+	}
+	
+	@Override
+	public HashMap<String, Object> getAttributes(){
+		return attributes;
+	}
+	
+	public void setAttributes(HashMap<String, Object> attributes){
+		this.attributes = attributes;
+	}
+	
 
 	@Override
 	public Set<String> getChildren() {
@@ -42,28 +62,10 @@ abstract class AbstractFlood implements Flood {
 	}
 
 	@Override
-	public String getBestChild() {
-		String bestChild = null;
-		double best = 0;
-		
-		for(String child: children.keySet()){
-			
-			if(best == 0 || children.get(child) > best){
-				bestChild = child;
-				best = children.get(child);
-			}
-		}
-		return bestChild;
-	}
+	public abstract String getBestChild();
 
 	@Override
-	public Flood transmitFlood(String parentId, String parentPos) {
-		Flood flood = Flood.clone();
-		flood.setParentPos(parentPos);
-		flood.setParentId(parentId);
-		flood.removeAllChild();
-		return flood;
-	}
+	public abstract Flood transmitFlood(String parentId, String parentPos);
 
 	@Override
 	public void setParentId(String parentId) {
@@ -108,12 +110,7 @@ abstract class AbstractFlood implements Flood {
 	}
 
 	@Override
-	public String getBestId() {
-		String bestChild = getBestChild();
-		if(children.get(bestChild) > myUtility)
-			return bestChild;
-		return null;
-	}
+	public abstract String getBestId();
 
 	@Override
 	public boolean hasAllUtilities() {
@@ -138,7 +135,7 @@ abstract class AbstractFlood implements Flood {
 		children.clear();
 	}
 	@Override
-	abstract Flood clone();
+	public abstract Flood clone();
 	
 
 }

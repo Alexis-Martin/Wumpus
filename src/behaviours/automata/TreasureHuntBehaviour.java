@@ -18,11 +18,14 @@ public class TreasureHuntBehaviour extends OneShotBehaviour {
 
 	@Override
 	public void action() {
+		
 		String protocolId = agent.getLocalName()+"_"+agent.getCurrentPosition();
-		Flood flood = new TreasureFlood(protocolId);
-		flood.setParent(null);
+		Flood flood = new TreasureFlood(protocolId, agent.getBackPackFreeSpace());
+		flood.setParentId(null);
+		flood.setParentPos(null);
 		agent.addFlood(protocolId, flood);
 		//ajouter params a flood
+		System.out.println(agent.getLocalName() + " lance le flood");
 		agent.addBehaviour(new TransmitFloodBehaviour(agent, protocolId));
 		agent.setStandBy(true);
 	}

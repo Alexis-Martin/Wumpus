@@ -1,6 +1,7 @@
 package behaviours.flood;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Set;
 
 public interface Flood extends Serializable {
@@ -35,7 +36,9 @@ public interface Flood extends Serializable {
 	public String getBestId();
 
 	public boolean hasAllUtilities();
-
+	
+	public HashMap<String, Object> getAttributes();
+	
 	public void setUtility(String localName, double utility);
 
 	public void setUtility(double utility);

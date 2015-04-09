@@ -19,21 +19,26 @@ public class CatchFloodBehaviour extends SimpleBehaviour {
 
 	@Override
 	public void action() {
-		this.agent.setStandBy(true); 
 		
 		final MessageTemplate msgTemplate = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPAGATE), MessageTemplate.MatchProtocol("flood"));
 		final ACLMessage msg = agent.receive(msgTemplate);
 		if (msg != null) {
+			this.agent.setStandBy(true); 
+			System.out.println(this.agent.getLocalName() + " receptionne le message");
 			Flood flood;
 			try {
 				flood = (Flood) msg.getContentObject();
+				flood.setUtility(agent.getBackPackFreeSpace());
 				if(!this.agent.containsFlood(flood.getId()) && !agent.getMap().goTo(agent.getCurrentPosition(), flood.getId()).isEmpty()){
 					this.agent.addFlood(flood.getId(), flood);
+					
 				}else{
 					block();
 					return;
 				}
 				
+				System.out.println(this.agent.getLocalName() + " envoi le ack");
+
 				final ACLMessage msgSend = new ACLMessage(ACLMessage.AGREE);
 				msgSend.setProtocol(flood.getId());
 				msgSend.setSender(this.agent.getAID());
