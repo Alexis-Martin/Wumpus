@@ -24,13 +24,14 @@ public class CatchFloodBehaviour extends SimpleBehaviour {
 		final ACLMessage msg = agent.receive(msgTemplate);
 		if (msg != null) {
 			this.agent.setStandBy(true); 
-			System.out.println(this.agent.getLocalName() + " receptionne le message");
+			System.out.println(this.agent.getLocalName() + " receptionne le message de flood");
 			Flood flood;
 			try {
 				flood = (Flood) msg.getContentObject();
 				flood.setUtility(agent.getBackPackFreeSpace());
-				if(!this.agent.containsFlood(flood.getId()) && !agent.getMap().goTo(agent.getCurrentPosition(), flood.getId()).isEmpty()){
+				if(!this.agent.containsFlood(flood.getId()) && !agent.getMap().goTo(agent.getCurrentPosition(), flood.getParentPos()).isEmpty()){
 					this.agent.addFlood(flood.getId(), flood);
+					System.out.println(this.agent.getLocalName() + " ajoute le flood");
 					
 				}else{
 					block();

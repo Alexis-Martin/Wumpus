@@ -16,11 +16,16 @@ public class MoveBehaviour extends OneShotBehaviour {
 
 	@Override
 	public void action() {
+		if(agent.isStandBy()){
+			nextState = HunterAgent.STAND_BY;
+			return;
+		}
 		String pos = agent.getCurrentPosition();
 		String dst = agent.getNextMove();
 		String log = "";
 
 		nextState = 0;
+
 		log += "\nAgent "+agent.getLocalName()+" is heading to position "+dst;
 		if(!agent.move(pos, dst)){
 			log += "\nAgent "+agent.getLocalName()+" Cannot go into a full room";

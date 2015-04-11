@@ -29,6 +29,7 @@ public class TransmitFloodBehaviour extends SimpleBehaviour {
 			msg.addReceiver(new AID(partner, AID.ISLOCALNAME));
 		}
 		try {
+			System.out.println("Protocole : " + protocol + " id " + agent.getFlood(protocol));
 			msg.setContentObject(agent.getFlood(protocol).transmitFlood(agent.getLocalName(), agent.getCurrentPosition()));
 		} catch (IOException e) {
 			e.printStackTrace();

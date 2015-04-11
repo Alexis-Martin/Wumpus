@@ -30,6 +30,11 @@ public class ObserveBehaviour extends OneShotBehaviour {
 		String log = "";
 		
 		nextState = 0;
+		if(agent.isStandBy()){
+			nextState = HunterAgent.STAND_BY;
+			this.block(this.pause);
+			return;
+		}
 		log += "\nPosition of agent "+agent.getLocalName()+" : "+myPosition;
 		if (myPosition!=""){
 			List<Couple<String,List<Attribute>>> lobs = agent.observe(myPosition);
@@ -44,7 +49,7 @@ public class ObserveBehaviour extends OneShotBehaviour {
 					Node n = agent.getMap().addRoom(pos, true, c.getR());
 					agent.getDiff().addRoom(n);
 					if (n.hasAttribute("treasure#") && (int) n.getAttribute("treasure#") > 0){
-						this.nextState = 2;
+						this.nextState = 1;
 					}
 					continue;
 				}

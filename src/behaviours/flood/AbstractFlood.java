@@ -130,6 +130,9 @@ abstract class AbstractFlood implements Flood {
 	public void setUtility(double utility) {
 		this.myUtility = utility;
 	}
+	
+	public abstract String transmitUtility();
+	
 	@Override
 	public void removeAllChild() {
 		children.clear();

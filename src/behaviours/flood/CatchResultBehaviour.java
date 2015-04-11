@@ -24,8 +24,10 @@ public class CatchResultBehaviour extends SimpleBehaviour {
 		final ACLMessage msg = agent.receive(msgTemplate);
 		
 		if(msg != null){
+			System.out.println(this.agent.getLocalName() + " recoit le resultat");
 			Flood flood = agent.getFlood(protocol);
 			if(msg.getContent().equals("dismiss")){
+				System.out.println("\t negatif je trace ma route");
 				final ACLMessage msgDismiss = new ACLMessage(ACLMessage.REQUEST);
 				msgDismiss.setProtocol(this.protocol);
 				msgDismiss.setSender(this.agent.getAID());
@@ -44,6 +46,7 @@ public class CatchResultBehaviour extends SimpleBehaviour {
 					
 				}
 				else{
+					System.out.println("\t je transmet le résultat à mon fils et je me casse");
 					final ACLMessage msgAccept = new ACLMessage(ACLMessage.REQUEST);
 					msgAccept.setProtocol(this.protocol);
 					msgAccept.setSender(this.agent.getAID());

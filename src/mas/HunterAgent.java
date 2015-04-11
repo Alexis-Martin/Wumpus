@@ -24,6 +24,7 @@ public class HunterAgent extends abstractAgent {
 	 * 
 	 */
 	private static final long serialVersionUID = -7792554715666014751L;
+	public static final int STAND_BY = 2; 
 	private HashMap<String, String> teamMates;
 	private Map map;
 	private Map diff;
@@ -91,10 +92,12 @@ public class HunterAgent extends abstractAgent {
 		dispach_behaviour.registerDefaultTransition("Decide", "Move");
 		dispach_behaviour.registerDefaultTransition("TreasureHunt", "StandBy");
 		dispach_behaviour.registerTransition("Observe", "Decide", 0);
-		dispach_behaviour.registerTransition("Observe", "TreasureHunt", 2);
+		dispach_behaviour.registerTransition("Observe", "TreasureHunt", 1);
 		dispach_behaviour.registerTransition("Observe", "End", 10);
+		dispach_behaviour.registerTransition("Observe", "StandBy", STAND_BY);
 		dispach_behaviour.registerTransition("Move", "Observe", 0);
 		dispach_behaviour.registerTransition("Move", "Decide", 1);
+		dispach_behaviour.registerTransition("Move", "StandBy", STAND_BY);
 		dispach_behaviour.registerTransition("StandBy", "StandBy", 0);
 		dispach_behaviour.registerTransition("StandBy", "Decide", 1);
 		
@@ -144,10 +147,12 @@ public class HunterAgent extends abstractAgent {
 
 	public void addFlood(String protocolId, Flood flood) {
 		this.floods.put(protocolId, flood);
-		
+		System.out.println(getLocalName() + " ajoute le flood " + protocolId + " dans la HashMap");
+		System.out.println("Le flood est : " + floods.get(protocolId));
 	}
 
 	public Flood getFlood(String protocole) {
+		System.out.println(getLocalName() + " renvoi le flood " + floods.get(protocole));
 		return floods.get(protocole);
 	}
 
@@ -189,6 +194,7 @@ public class HunterAgent extends abstractAgent {
 	}
 
 	public void removeFlood(String protocol) {
+		System.out.println(getLocalName() + " supprime le flood " + protocol);
 		this.floods.remove(protocol);
 	}
 

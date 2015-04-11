@@ -8,7 +8,7 @@ import jade.lang.acl.MessageTemplate;
 
 public class RegisterParentBehaviour extends SimpleBehaviour {
 	private static final long serialVersionUID = -5673786944992246974L;
-	private final long timeout = 100; //ms
+	private final long timeout = 500; //ms
 	private boolean finished = false;
 	private HunterAgent agent;
 	private String protocol;
@@ -29,6 +29,7 @@ public class RegisterParentBehaviour extends SimpleBehaviour {
 		final ACLMessage msg = agent.receive(msgTemplate);
 		
 		if(msg != null){
+			System.out.println(this.agent.getLocalName() + " ");
 			agent.addBehaviour(new TransmitFloodBehaviour(agent, protocol));
 			finished = true;
 			receive = true;
@@ -44,7 +45,7 @@ public class RegisterParentBehaviour extends SimpleBehaviour {
 
 	@Override
 	public boolean done() {
-		if(!receive){
+		if(!receive && finished){
 			this.agent.removeFlood(protocol);
 			this.agent.setStandBy(false);
 		}

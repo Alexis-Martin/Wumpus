@@ -26,7 +26,8 @@ public class CatchEchoBehaviour extends SimpleBehaviour {
 		final ACLMessage msg = agent.receive(msgTemplate);
 		Flood flood = this.agent.getFlood(protocol);
 		if(msg != null){
-			flood.setUtility(msg.getSender().getLocalName(), Integer.parseInt(msg.getContent()));
+			System.out.println(this.agent.getLocalName() + " recoit l'echo de " + msg.getSender().getLocalName());
+			flood.setUtility(msg.getSender().getLocalName(), Double.parseDouble(msg.getContent()));
 			if(flood.hasAllUtilities())
 				finished = true;
 			else
@@ -39,6 +40,7 @@ public class CatchEchoBehaviour extends SimpleBehaviour {
 	@Override
 	public boolean done() {
 		if(finished){
+			System.out.println(this.agent.getLocalName() + " a tous ces fils");
 			Flood flood = this.agent.getFlood(protocol);
 			String best = flood.getBestId();
 			
@@ -51,6 +53,7 @@ public class CatchEchoBehaviour extends SimpleBehaviour {
 			
 			for(String child : flood.getChildren()){
 				if(!child.equals(best)){
+					System.out.println(this.agent.getLocalName() + " dismiss " + child);
 					msgDismiss.addReceiver(new AID(child, AID.ISLOCALNAME));
 					removeChildren.add(child);
 				}
@@ -59,12 +62,13 @@ public class CatchEchoBehaviour extends SimpleBehaviour {
 			msgDismiss.setContent("dismiss");
 			agent.sendMessage(msgDismiss);
 			
-			if(!flood.hasParent() && best.equals(this.agent.getLocalName())){
+			if(!flood.hasParent() && best == null){
 				System.out.println("je ramasse");
 				this.agent.pick();
 				this.agent.setStandBy(false);
 			}
-			else if(!flood.hasParent() && !best.equals(this.agent.getLocalName())){
+			else if(!flood.hasParent() && best != null){
+				System.out.println(this.agent.getLocalName() + " transmet le resultat du meilleur fils");
 				final ACLMessage msgAccept = new ACLMessage(ACLMessage.REQUEST);
 				msgAccept.setProtocol(this.protocol);
 				msgAccept.setSender(this.agent.getAID());

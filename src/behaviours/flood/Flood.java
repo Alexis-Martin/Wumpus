@@ -18,6 +18,8 @@ public interface Flood extends Serializable {
 	public String getBestChild();
 	
 	public Flood transmitFlood(String parentId, String parentPos);
+	
+	public String transmitUtility();
 
 	public void setParentId(String parent);
 	

@@ -14,9 +14,10 @@ public class TreasureFlood extends AbstractFlood {
 
 	@Override
 	public String getMessage() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
+	
 
 
 	@Override
@@ -48,9 +49,17 @@ public class TreasureFlood extends AbstractFlood {
 	@Override
 	public String getBestId() {
 		String bestChild = getBestChild();
-		if(children.get(bestChild) > myUtility)
+		if(bestChild != null  && children.get(bestChild) > myUtility)
 			return bestChild;
 		return null;
+	}
+	
+	@Override
+	public String transmitUtility(){
+		String best = getBestId();
+		if(best == null)
+			return "" + myUtility;
+		return "" + children.get(best);
 	}
 
 

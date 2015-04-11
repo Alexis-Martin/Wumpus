@@ -20,7 +20,7 @@ public class TransmitEchoBehaviour extends SimpleBehaviour {
 	
 	@Override
 	public void action() {
-		String message = this.agent.getFlood(protocol).getMessage();
+		String message = this.agent.getFlood(protocol).transmitUtility();
 
 		final ACLMessage msgSend = new ACLMessage(ACLMessage.INFORM_REF);
 		msgSend.setProtocol(this.protocol);
@@ -28,7 +28,7 @@ public class TransmitEchoBehaviour extends SimpleBehaviour {
 		msgSend.addReceiver(new AID(this.agent.getFlood(protocol).getParentId(), AID.ISLOCALNAME));
 		msgSend.setContent(message);
 		agent.sendMessage(msgSend);
-		
+		System.out.println(this.agent.getLocalName() + " a envoye l'echo");
 		agent.addBehaviour(new CatchResultBehaviour(agent, protocol));
 		this.finished = true;
 	}
