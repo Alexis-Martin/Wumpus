@@ -19,7 +19,7 @@ public class RegisterParentBehaviour extends SimpleBehaviour {
 		super(agent);
 		this.agent = agent;
 		this.protocol = protocol;
-		this.begin = System.nanoTime();
+		this.begin = System.currentTimeMillis();
 		this.receive = false;
 	}
 
@@ -34,7 +34,7 @@ public class RegisterParentBehaviour extends SimpleBehaviour {
 			finished = true;
 			receive = true;
 		}else{
-			long t = (this.timeout*1000 + this.begin) - System.nanoTime();
+			long t = (this.timeout + this.begin) - System.currentTimeMillis();
 			if(t > 0){
 				block(t);
 			}else{

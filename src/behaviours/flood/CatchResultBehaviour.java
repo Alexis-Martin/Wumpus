@@ -41,7 +41,7 @@ public class CatchResultBehaviour extends SimpleBehaviour {
 			else{
 				if(!flood.hasChild()){
 					String lieu = msg.getContent().split("_")[1];
-					System.out.println("je vais prendre le tresor en " + lieu);
+					System.out.println(this.agent.getLocalName() + " vais prendre le tresor en " + lieu);
 					
 					
 				}

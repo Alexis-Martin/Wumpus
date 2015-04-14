@@ -61,8 +61,8 @@ public class EmptyEnv {
 		System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 		//0) Create the real environment and the observed one
 //		env= new Environment(ENVtype.DOROGOVTSEV_W, 400);
-		env= new Environment(ENVtype.GRID_T, 3);
-
+		env= new Environment(ENVtype.GRID_T, 5);
+		
 		
 		//1), create the platform (Main container (DF+AMS) + containers + monitoring agents : RMA and SNIFFER)
 		rt=emptyPlatform(containerList);
@@ -237,9 +237,9 @@ public class EmptyEnv {
 		try {
 			team = new HashMap<String, String>();
 			team.put("Bravo", "");
-			//team.put("Charlie", "");
-			//team.put("Delta", "");
-			//team.put("Echo", "");
+			team.put("Charlie", "");
+			team.put("Delta", "");
+			team.put("Echo", "");
 			Object[] objtab=new Object[]{env, team};//used to give informations to the agent
 			AgentController	ag=c.createNewAgent(agentName, HunterAgent.class.getName(),objtab);
 			agentList.add(ag);
@@ -254,9 +254,60 @@ public class EmptyEnv {
 		try {
 			team = new HashMap<String, String>();
 			team.put("Alpha", "");
-			//team.put("Charlie", "");
-			//team.put("Delta", "");
-			//team.put("Echo", "");
+			team.put("Charlie", "");
+			team.put("Delta", "");
+			team.put("Echo", "");
+			Object[] objtab=new Object[]{env, team};//used to give informations to the agent
+			AgentController	ag=c.createNewAgent(agentName, HunterAgent.class.getName(),objtab);
+			agentList.add(ag);
+			System.out.println(agentName+" launched");
+		} catch (StaleProxyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		c = containerList.get("container0");
+		agentName="Charlie";
+		try {
+			team = new HashMap<String, String>();
+			team.put("Alpha", "");
+			team.put("Bravo", "");
+			team.put("Delta", "");
+			team.put("Echo", "");
+			Object[] objtab=new Object[]{env, team};//used to give informations to the agent
+			AgentController	ag=c.createNewAgent(agentName, HunterAgent.class.getName(),objtab);
+			agentList.add(ag);
+			System.out.println(agentName+" launched");
+		} catch (StaleProxyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		c = containerList.get("container0");
+		agentName="Delta";
+		try {
+			team = new HashMap<String, String>();
+			team.put("Alpha", "");
+			team.put("Charlie", "");
+			team.put("Bravo", "");
+			team.put("Echo", "");
+			Object[] objtab=new Object[]{env, team};//used to give informations to the agent
+			AgentController	ag=c.createNewAgent(agentName, HunterAgent.class.getName(),objtab);
+			agentList.add(ag);
+			System.out.println(agentName+" launched");
+		} catch (StaleProxyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		c = containerList.get("container0");
+		agentName="Echo";
+		try {
+			team = new HashMap<String, String>();
+			team.put("Alpha", "");
+			team.put("Charlie", "");
+			team.put("Delta", "");
+			team.put("Bravo", "");
 			Object[] objtab=new Object[]{env, team};//used to give informations to the agent
 			AgentController	ag=c.createNewAgent(agentName, HunterAgent.class.getName(),objtab);
 			agentList.add(ag);

@@ -30,8 +30,6 @@ public class CatchEchoBehaviour extends SimpleBehaviour {
 			flood.setUtility(msg.getSender().getLocalName(), Double.parseDouble(msg.getContent()));
 			if(flood.hasAllUtilities())
 				finished = true;
-			else
-				block();
 		}else
 			block();
 
@@ -66,6 +64,7 @@ public class CatchEchoBehaviour extends SimpleBehaviour {
 				System.out.println("je ramasse");
 				this.agent.pick();
 				this.agent.setStandBy(false);
+				this.agent.removeFlood(protocol);
 			}
 			else if(!flood.hasParent() && best != null){
 				System.out.println(this.agent.getLocalName() + " transmet le resultat du meilleur fils");
@@ -74,6 +73,8 @@ public class CatchEchoBehaviour extends SimpleBehaviour {
 				msgAccept.setSender(this.agent.getAID());
 				msgAccept.addReceiver(new AID(best, AID.ISLOCALNAME));
 				msgAccept.setContent("accept_" + this.agent.getCurrentPosition());
+				this.agent.setStandBy(false);
+				this.agent.removeFlood(protocol);
 				agent.sendMessage(msgAccept);
 			}
 			else if(flood.hasParent()){

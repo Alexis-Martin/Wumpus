@@ -18,7 +18,7 @@ public class RegisterChildrenBehaviour extends SimpleBehaviour {
 		super(agent);
 		this.agent = agent;
 		this.protocol = protocol;
-		this.begin = System.nanoTime();
+		this.begin = System.currentTimeMillis();
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class RegisterChildrenBehaviour extends SimpleBehaviour {
 			msgSend.addReceiver(new AID(child, AID.ISLOCALNAME));
 			agent.sendMessage(msgSend);
 		}else{
-			long t = (this.timeout*1000 + this.begin) - System.nanoTime();
+			long t = (this.timeout + this.begin) - System.currentTimeMillis();
 			if(t > 0){
 				block(t);
 			}else{

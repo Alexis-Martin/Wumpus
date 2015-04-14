@@ -34,7 +34,6 @@ public class CatchFloodBehaviour extends SimpleBehaviour {
 					System.out.println(this.agent.getLocalName() + " ajoute le flood");
 					
 				}else{
-					block();
 					return;
 				}
 				
