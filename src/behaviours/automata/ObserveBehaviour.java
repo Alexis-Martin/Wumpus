@@ -61,6 +61,16 @@ public class ObserveBehaviour extends OneShotBehaviour {
 					agent.getDiff().addRoad(agent.getMap().getEdge(agent.getMap().getEdgeId(myPosition, pos)));
 				}
 			}
+			agent.getMap().updateWell(agent.getCurrentPosition(), agent.observe(agent.getCurrentPosition()));
+			for(Node n : agent.getDiff().getNodeSet()){
+				Node node = agent.getMap().getNode(n.getId());
+				for(String attr:node.getAttributeKeySet()){
+					if(attr.contains("ui")){
+						continue;
+					}
+					n.addAttribute(attr, node.getAttribute(attr));
+				}
+			}
 		}
 		//System.out.println(log);
 		this.block(this.pause);

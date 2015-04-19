@@ -65,8 +65,13 @@ public class HunterAgent extends abstractAgent {
 				 + "edge.taken2{fill-color:red;}"
 				 + "node.marker{fill-color:blue;text-color:white;}"
 				 + "node.open{fill-color:grey;}"
-				 + "node.treasure{stroke-mode:plain; stroke-color:yellow; stroke-width:3;}";
+				 + "node.treasure{stroke-mode:plain; stroke-color:yellow; stroke-width:3;}"
+				 + "node.well1{stroke-mode:plain; stroke-color:green; stroke-width:3;}"
+				 + "node.well2{stroke-mode:plain; stroke-color:yellow; stroke-width:3;}"
+				 + "node.well3{stroke-mode:plain; stroke-color:orange; stroke-width:3;}"
+		         + "node.well4{stroke-mode:plain; stroke-color:red; stroke-width:3;}";
 		map.addAttribute("ui.stylesheet", stylesheet);
+		map.display();
 //		this.capacity = getBackPackFreeSpace();
 		diff = new Map(this.getLocalName()+"_diff", false);
 		//diff.addAttribute("ui.stylesheet", stylesheet);

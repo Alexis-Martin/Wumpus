@@ -44,7 +44,7 @@ public class Map extends SingleGraph{
 			if(super.getNode(srcId) == null || super.getNode(dstId) == null){
 				System.out.println("Try to create an edge, but at least one node doesn't exist");
 			}
-			Edge e = super.addEdge(srcId+"-"+dstId, srcId, dstId);
+			Edge e = super.addEdge(srcId+"-"+dstId, srcId, dstId, false);
 			e.addAttribute("taken#", 0);
 			return true;
 		}else{
@@ -62,7 +62,7 @@ public class Map extends SingleGraph{
 			if(super.getNode(srcId) == null || super.getNode(dstId) == null){
 				System.out.println("Try to create an edge, but at least one node doesn't exist");
 			}
-			newEdge = super.addEdge(id, srcId, dstId);
+			newEdge = super.addEdge(id, srcId, dstId, false);
 			for(String attr : e.getAttributeKeySet()){
 				newEdge.addAttribute(attr, e.getAttribute(attr));
 			}
@@ -86,16 +86,10 @@ public class Map extends SingleGraph{
 	
 	public Node addRoom(String id, boolean visited, List<Attribute> attr){
 		Node n = this.addRoom(id, visited);
-		boolean treasure = false;
 		for(Attribute a:attr){
 			if(a.getName().equals("Treasure")){
 				n.addAttribute("treasure#", a.getValue());
-				treasure = true;
 			}
-		}
-		
-		if(!treasure){
-			n.setAttribute("treasure#", 0);
 		}
 		
 		this.updateLayout(n, visited);
@@ -250,6 +244,9 @@ public class Map extends SingleGraph{
 		Node n = this.getNode(dst);
 		Edge e = this.getEdge(this.getEdgeId(src, dst));
 		double utility = 0.0;
+		if(this.getWell(dst) >= 3){
+			return 0;
+		}
 		if(!(Boolean) n.getAttribute("visited?")){
 			utility += 1.0;
 		}
@@ -259,30 +256,39 @@ public class Map extends SingleGraph{
 		return utility;
 	}
 	
-	
-	public void setWell(String room, boolean wind){
-		if(wind){
-			Iterator<SingleNode> it = this.getNode(room).getNeighborNodeIterator();
-			int min = 6;
-			while(it.hasNext()){
-				SingleNode s = it.next();
-				if(s.hasAttribute("well#") && (int)s.getAttribute("well#") < min)
-					min = (int)s.getAttribute("well#");
-						
+	public void updateWell(String pos, List<Couple<String,List<Attribute>>> obs){
+		for(Couple<String,List<Attribute>> c : obs){
+			String r = c.getL();
+			if(r.equals(pos)){
+				continue;
 			}
-			if(min == 6)
-				min = 0;
-			
-			this.getNode(room).addAttribute("well#", min+1);
-
+			for(Attribute a : c.getR()){
+				if(a.getName().equals("Wind")){
+					this.setWell(r);
+				}
+			}
+			this.updateLayout(this.getNode(r));
 		}
-		else{
-			this.getNode(room).addAttribute("well#", 0);
+	}
+	
+	
+	public void setWell(String room){
+		Iterator<SingleNode> it = this.getNode(room).getNeighborNodeIterator();
+		int min = 6;
+		while(it.hasNext()){
+			SingleNode s = it.next();
+			//System.out.println(s.getId()+" well : "+ this.getWell(s.getId()));
+			if(getWell(s.getId()) < min)
+				min = getWell(s.getId());
+					
 		}
+		if(min == 6)
+			min = 0;
+		
+		this.getNode(room).addAttribute("well#", min+1);
 		
 		if(getWell(room) == 3){
 			isWell(room);
-			this.getNode(room).setAttribute("visited?", true);
 		}
 		
 	}
@@ -291,7 +297,7 @@ public class Map extends SingleGraph{
 		if(this.getNode(id).hasAttribute("well#"))
 			return getNode(id).getAttribute("well#");
 		
-		return -1;
+		return 0;
 	}
 	
 	public boolean isWell(String id){
@@ -355,6 +361,10 @@ public class Map extends SingleGraph{
 		}
 		if(n.hasAttribute("treasure#") && (int) n.getAttribute("treasure#") > 0){
 			classes += "treasure,";
+		}
+		if(n.hasAttribute("well#") && (int)n.getAttribute("well#") > 0){
+			int w = (int)n.getAttribute("well#");
+			classes+= "well"+w+",";
 		}
 		if(marker){
 			classes += "marker,";

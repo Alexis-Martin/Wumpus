@@ -54,6 +54,9 @@ public class SerializationHelper {
 						n.addAttribute(attr, true);
 					}else if(attr.contains("#")){
 						String[] split = attr.split("#");
+						if(attr.equals("well#") && n.hasAttribute("well#") && (int)n.getAttribute("well#") > Integer.parseInt(split[1])){
+							continue;
+						}
 						n.addAttribute(split[0]+"#", Integer.parseInt(split[1]));
 					}
 				}

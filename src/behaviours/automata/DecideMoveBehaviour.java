@@ -30,13 +30,23 @@ public class DecideMoveBehaviour extends OneShotBehaviour {
 		HashMap<String, Double> possible = new HashMap<String, Double>();
 		Iterator<SingleNode> nexts = pos.getNeighborNodeIterator();
 		Random rand = new Random();
+		double maxU = 0;
 		
 		while(nexts.hasNext()){
 			Node next = nexts.next();
-			if(this.agent.getMap().getWell(next.getId()) < 3)
-				possible.put(next.getId(), agent.getMap().getMoveUtility(pos.getId(), next.getId()));
+			double u = agent.getMap().getMoveUtility(pos.getId(), next.getId());
+			if(u > 0){
+				possible.put(next.getId(), u);
+				if(u > maxU){
+					maxU = u;
+				}
+			}
+			
 			if(agent.isRandomWalk()){
 				double r = rand.nextDouble();
+				if(agent.getMap().getMoveUtility(pos.getId(), next.getId()) == 0){
+					continue;
+				}
 				if(r > 0.8){
 					agent.setNextMove(next.getId());
 					return;
@@ -44,8 +54,10 @@ public class DecideMoveBehaviour extends OneShotBehaviour {
 			}
 		}
 		
-		Collection<Double> utilities = possible.values();
-		double maxU = Collections.max(utilities);
+		if(possible.isEmpty()){
+			System.out.println(agent.getLocalName()+" in "+agent.getCurrentPosition()+" can't move anywhere");
+		}
+		
 		List<String> choices = new ArrayList<String>();
 		for(String id:possible.keySet()){
 			if(possible.get(id) == maxU){
