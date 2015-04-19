@@ -16,17 +16,28 @@ public class StandByBehaviour extends OneShotBehaviour {
 
 	@Override
 	public void action() {
+
 		this.nextState = 0;
 		if(agent.isStandBy()){
 			//Check wumpus...
 			//System.out.println(agent.getLocalName() + " is on stand by");
 			block(this.timeout);
 		}else{
-			this.nextState = 1;
+			if(agent.isTreasure()){
+				this.nextState = 1;
+				agent.setTreasure(false);
+			}
+			else if(agent.isRiskWell()){
+				this.nextState = 2;
+				agent.setRiskWell(false);
+			}
+			else
+				this.nextState = 3;
 		}
 	}
 	
 	public int onEnd(){
+		
 		return nextState;
 	}
 

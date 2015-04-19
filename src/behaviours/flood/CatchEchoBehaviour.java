@@ -5,6 +5,11 @@ import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -72,7 +77,13 @@ public class CatchEchoBehaviour extends SimpleBehaviour {
 				msgAccept.setProtocol(this.protocol);
 				msgAccept.setSender(this.agent.getAID());
 				msgAccept.addReceiver(new AID(best, AID.ISLOCALNAME));
-				msgAccept.setContent("accept_" + this.agent.getCurrentPosition());
+				ArrayList<String> path = new ArrayList<String>();
+				path.add(this.agent.getCurrentPosition());
+				try {
+					msgAccept.setContentObject(path);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				this.agent.setStandBy(false);
 				this.agent.removeFlood(protocol);
 				agent.sendMessage(msgAccept);

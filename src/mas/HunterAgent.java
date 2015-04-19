@@ -4,14 +4,19 @@ package mas;
 
 import jade.core.behaviours.FSMBehaviour;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.graphstream.graph.Edge;
 
+import behaviours.automata.CatchTreasureBehaviour;
 import behaviours.automata.DecideMoveBehaviour;
+import behaviours.automata.GoToBehaviour;
 import behaviours.automata.MoveBehaviour;
 import behaviours.automata.ObserveBehaviour;
+import behaviours.automata.ObserveTreasureBehaviour;
 import behaviours.automata.StandByBehaviour;
 import behaviours.automata.TreasureHuntBehaviour;
 import behaviours.flood.CatchFloodBehaviour;
@@ -29,8 +34,13 @@ public class HunterAgent extends abstractAgent {
 	private Map map;
 	private Map diff;
 	private String nextMove;
+	private List<String> stackMove;
 	protected boolean randomWalk = false;
 	protected boolean standBy = false;
+	private boolean catchTreasure = false;
+	private boolean riskWell = false;
+	private boolean follow = false;
+	
 	private HashMap<String, Flood> floods;
 	private int capacity;
 	
@@ -47,8 +57,9 @@ public class HunterAgent extends abstractAgent {
 		super.setup();
 		this.teamMates = new HashMap<String, String>();
 		this.floods = new HashMap<String, Flood>();
+		this.stackMove = new ArrayList<String>();
 		//Map UI settings
-		this.map = new Map(this.getLocalName(), true);
+		this.map = new Map(this.getLocalName(), false);
 		String stylesheet = "node {text-style:bold;fill-color:white;stroke-mode:plain;stroke-color:black;size:20;}"
 				 + "edge.taken{fill-color:green;}"
 				 + "edge.taken2{fill-color:red;}"
@@ -86,6 +97,11 @@ public class HunterAgent extends abstractAgent {
 		dispach_behaviour.registerState(new MoveBehaviour(this), "Move");
 		dispach_behaviour.registerState(new TreasureHuntBehaviour(this), "TreasureHunt");
 		dispach_behaviour.registerState(new StandByBehaviour(this), "StandBy");
+		dispach_behaviour.registerState(new ObserveTreasureBehaviour(this), "ObserveTreasure");
+		dispach_behaviour.registerState(new GoToBehaviour(this), "goToTreasure");
+		dispach_behaviour.registerState(new MoveBehaviour(this), "moveTreasure");
+		dispach_behaviour.registerState(new CatchTreasureBehaviour(this), "catchTreasure");
+
 		dispach_behaviour.registerLastState(new MessageBehaviour(this), "End");
 
 		dispach_behaviour.registerDefaultTransition("Sync", "Observe");
@@ -99,8 +115,14 @@ public class HunterAgent extends abstractAgent {
 		dispach_behaviour.registerTransition("Move", "Decide", 1);
 		dispach_behaviour.registerTransition("Move", "StandBy", STAND_BY);
 		dispach_behaviour.registerTransition("StandBy", "StandBy", 0);
-		dispach_behaviour.registerTransition("StandBy", "Decide", 1);
-		
+		dispach_behaviour.registerTransition("StandBy", "Decide", 3);
+		dispach_behaviour.registerTransition("StandBy", "ObserveTreasure", 1);
+		dispach_behaviour.registerTransition("ObserveTreasure", "goToTreasure", 0);
+		dispach_behaviour.registerTransition("ObserveTreasure", "catchTreasure", 4);
+		dispach_behaviour.registerDefaultTransition("goToTreasure", "moveTreasure");
+		dispach_behaviour.registerDefaultTransition("moveTreasure", "ObserveTreasure");
+		dispach_behaviour.registerDefaultTransition("catchTreasure", "Decide");
+
 		addBehaviour(dispach_behaviour);
 		addBehaviour(new PushMapBehaviour(this));
 		addBehaviour(new PullMapBehaviour(this));
@@ -200,6 +222,46 @@ public class HunterAgent extends abstractAgent {
 
 	public int getCapacity() {
 		return capacity;
+	}
+
+	public boolean isTreasure() {
+		return catchTreasure;
+	}
+
+	public void setTreasure(boolean b) {
+		catchTreasure = b;
+	}
+
+	public boolean isRiskWell() {
+		return riskWell;
+	}
+
+	public void setRiskWell(boolean b) {
+		riskWell = b;
+	}
+
+	public boolean isFollow() {
+		return follow;
+	}
+	
+	public void setStackMove(List<String> stackMove){
+		this.stackMove = stackMove;
+	}
+	
+	public String popStackMove(){
+		if(!stackMove.isEmpty()){
+			String ret = stackMove.get(stackMove.size() - 1);
+			stackMove.remove(stackMove.size() - 1);
+			return ret;
+		}
+		return null;
+	}
+	public boolean stackMoveEmpty(){
+		return stackMove.isEmpty();
+	}
+
+	public void setFollow(boolean b) {
+		follow = b;
 	}
 
 }

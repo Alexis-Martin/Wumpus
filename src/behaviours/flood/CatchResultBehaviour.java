@@ -1,10 +1,15 @@
 package behaviours.flood;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import mas.HunterAgent;
 import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 
 public class CatchResultBehaviour extends SimpleBehaviour {
 	private static final long serialVersionUID = -2417706979155315948L;
@@ -18,6 +23,7 @@ public class CatchResultBehaviour extends SimpleBehaviour {
 		this.protocol = protocol;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void action() {
 		final MessageTemplate msgTemplate = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.REQUEST), MessageTemplate.MatchProtocol(this.protocol));
@@ -40,22 +46,42 @@ public class CatchResultBehaviour extends SimpleBehaviour {
 			}
 			else{
 				if(!flood.hasChild()){
-					String lieu = msg.getContent().split("_")[1];
-					System.out.println(this.agent.getLocalName() + " vais prendre le tresor en " + lieu);
+					ArrayList<String> path = null;
+					try {
+						path = (ArrayList<String>) msg.getContentObject();
+						System.out.println(this.agent.getLocalName() + " vais prendre le tresor en " + path.get(path.size() - 1));
+						agent.setFollow(true);
+						agent.setStackMove(path);
+					} catch (UnreadableException e) {
+						e.printStackTrace();
+					}
 					
 					
 				}
 				else{
 					System.out.println("\t je transmet le résultat à mon fils et je me casse");
-					final ACLMessage msgAccept = new ACLMessage(ACLMessage.REQUEST);
-					msgAccept.setProtocol(this.protocol);
-					msgAccept.setSender(this.agent.getAID());
-									
-					for(String child : flood.getChildren()){
-						msgAccept.addReceiver(new AID(child, AID.ISLOCALNAME));
-					}	
-					msgAccept.setContent(msg.getContent());
-					agent.sendMessage(msgAccept);
+					ArrayList<String> path;
+					try {
+						path = (ArrayList<String>) msg.getContentObject();
+						ArrayList<String> path2 = agent.getMap().goTo(this.agent.getCurrentPosition(), this.agent.getFlood(protocol).getParentPos());
+						for(int i = 1; i < path.size(); i++){
+							path2.add(path.get(i));
+						}
+						final ACLMessage msgAccept = new ACLMessage(ACLMessage.REQUEST);
+						msgAccept.setProtocol(this.protocol);
+						msgAccept.setSender(this.agent.getAID());
+										
+						for(String child : flood.getChildren()){
+							msgAccept.addReceiver(new AID(child, AID.ISLOCALNAME));
+						}	
+						msgAccept.setContentObject(path2);
+						agent.sendMessage(msgAccept);
+					} catch (UnreadableException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					
 				}
 			}
 			agent.removeFlood(protocol);

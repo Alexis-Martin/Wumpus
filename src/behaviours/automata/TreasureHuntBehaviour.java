@@ -28,5 +28,6 @@ public class TreasureHuntBehaviour extends OneShotBehaviour {
 		System.out.println("\n\n\n\n\n\n" + agent.getLocalName() + " lance le flood");
 		agent.addBehaviour(new TransmitFloodBehaviour(agent, protocolId));
 		agent.setStandBy(true);
+		agent.setTreasure(true);
 	}
 }
