@@ -2,6 +2,8 @@ package mas;
 
 import java.io.IOException;
 
+import org.graphstream.graph.Node;
+
 import jade.core.AID;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -22,6 +24,18 @@ public class PushMapBehaviour extends TickerBehaviour {
 	@Override
 	protected void onTick() {
 		if((agent.getDiff().getEdgeSet().size() > k || i > 10) && agent.getDiff().getEdgeSet().size() > 0){
+			
+			//update attributes
+			for(Node n : agent.getDiff().getNodeSet()){
+				Node node = agent.getMap().getNode(n.getId());
+				for(String attr:node.getAttributeKeySet()){
+					if(attr.contains("ui")){
+						continue;
+					}
+					n.addAttribute(attr, node.getAttribute(attr));
+				}
+			}
+			
 			//Send graph update to team mates
 			if(agent.hasPartners()){
 				final ACLMessage msg = new ACLMessage(ACLMessage.INFORM);

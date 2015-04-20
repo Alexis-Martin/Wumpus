@@ -39,10 +39,12 @@ public class PullMapBehaviour extends SimpleBehaviour {
 
 		final ACLMessage msg = agent.receive(msgTemplate);
 		if (msg != null) {
+			agent.setStandBy(false); //test
 			HashMap<String, List<String>> info;
 			try {
 				info = (HashMap<String, List<String>>) msg.getContentObject();
-				agent.getMap().merge(SerializationHelper.deserializeMapInfo(info));
+				Map msgMap = SerializationHelper.deserializeMapInfo(info);
+				agent.getMap().merge(msgMap);
 			} catch (UnreadableException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

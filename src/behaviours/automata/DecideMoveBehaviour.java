@@ -18,6 +18,7 @@ import jade.core.behaviours.OneShotBehaviour;
 public class DecideMoveBehaviour extends OneShotBehaviour {
 	private static final long serialVersionUID = -8702619088303808521L;
 	private HunterAgent agent;
+	private int nextState;
 	
 	public DecideMoveBehaviour(HunterAgent agent){
 		super(agent);
@@ -26,6 +27,10 @@ public class DecideMoveBehaviour extends OneShotBehaviour {
 	
 	@Override
 	public void action() {
+		nextState = 0;
+		
+		agent.getMap().updateWell(agent.getCurrentPosition(), agent.observe(agent.getCurrentPosition()));
+		
 		Node pos = agent.getMap().getNode(agent.getCurrentPosition());
 		HashMap<String, Double> possible = new HashMap<String, Double>();
 		Iterator<SingleNode> nexts = pos.getNeighborNodeIterator();
@@ -56,6 +61,9 @@ public class DecideMoveBehaviour extends OneShotBehaviour {
 		
 		if(possible.isEmpty()){
 			System.out.println(agent.getLocalName()+" in "+agent.getCurrentPosition()+" can't move anywhere");
+			nextState = 2;
+			agent.setStandBy(true);
+			return;
 		}
 		
 		List<String> choices = new ArrayList<String>();
@@ -66,6 +74,10 @@ public class DecideMoveBehaviour extends OneShotBehaviour {
 		}
 		Collections.shuffle(choices);
 		agent.setNextMove(choices.get(0));
+	}
+	
+	public int onEnd(){
+		return this.nextState;
 	}
 
 }

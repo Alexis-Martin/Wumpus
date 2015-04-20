@@ -90,6 +90,9 @@ public class Map extends SingleGraph{
 			if(a.getName().equals("Treasure")){
 				n.addAttribute("treasure#", a.getValue());
 			}
+			if(a.getName().equals("Wind")){
+				n.addAttribute("wind?", true);
+			}
 		}
 		
 		this.updateLayout(n, visited);
@@ -103,9 +106,6 @@ public class Map extends SingleGraph{
 			newNode = super.addNode(id);
 		}
 		for(String attr:n.getAttributeKeySet()){
-			if(attr.contains("ui")){
-				continue;
-			}
 			newNode.addAttribute(attr, n.getAttribute(attr));
 		}
 		return newNode;
@@ -296,7 +296,8 @@ public class Map extends SingleGraph{
 	public int getWell(String id) {
 		if(this.getNode(id).hasAttribute("well#"))
 			return getNode(id).getAttribute("well#");
-		
+		if(this.getNode(id).hasAttribute("wind?") && (boolean) this.getNode(id).getAttribute("wind?"))
+			return 1;
 		return 0;
 	}
 	

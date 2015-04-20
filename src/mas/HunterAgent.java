@@ -110,12 +110,13 @@ public class HunterAgent extends abstractAgent {
 		dispach_behaviour.registerLastState(new MessageBehaviour(this), "End");
 
 		dispach_behaviour.registerDefaultTransition("Sync", "Observe");
-		dispach_behaviour.registerDefaultTransition("Decide", "Move");
 		dispach_behaviour.registerDefaultTransition("TreasureHunt", "StandBy");
 		dispach_behaviour.registerTransition("Observe", "Decide", 0);
 		dispach_behaviour.registerTransition("Observe", "TreasureHunt", 1);
 		dispach_behaviour.registerTransition("Observe", "End", 10);
 		dispach_behaviour.registerTransition("Observe", "StandBy", STAND_BY);
+		dispach_behaviour.registerTransition("Decide", "Move", 0);
+		dispach_behaviour.registerTransition("Decide", "StandBy", STAND_BY);
 		dispach_behaviour.registerTransition("Move", "Observe", 0);
 		dispach_behaviour.registerTransition("Move", "Decide", 1);
 		dispach_behaviour.registerTransition("Move", "StandBy", STAND_BY);

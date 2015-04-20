@@ -37,6 +37,7 @@ public class MoveBehaviour extends OneShotBehaviour {
 		
 		//System.out.println(log);
 	}
+	
 	public int onEnd(){
 		return this.nextState;
 	}
