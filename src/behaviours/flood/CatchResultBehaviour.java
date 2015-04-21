@@ -46,7 +46,12 @@ public class CatchResultBehaviour extends SimpleBehaviour {
 				if(!flood.hasChild()){
 					ArrayList<String> path = null;
 					try {
+						
 						path = (ArrayList<String>) msg.getContentObject();
+						ArrayList<String> path2 = agent.getMap().goTo(agent.getCurrentPosition(), path.get(path.size() - 1));
+						if(path2 != null && !path2.isEmpty())
+							path = path2;
+						
 						System.out.println(this.agent.getLocalName() + " vas prendre le tresor en " + path.get(path.size() - 1));
 						
 						System.out.println(agent.getLocalName() + " (C, q, T) = (" + flood.getAttribute("capacity") + ", " + flood.getAttribute("quantity") + ", " + flood.getAttribute("treasure") + ")");
@@ -57,7 +62,6 @@ public class CatchResultBehaviour extends SimpleBehaviour {
 					} catch (UnreadableException e) {
 						e.printStackTrace();
 					}
-					
 					
 				}
 				else{
