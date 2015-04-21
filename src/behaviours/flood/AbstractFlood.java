@@ -8,14 +8,12 @@ abstract class AbstractFlood implements Flood {
 	
 	private static final long serialVersionUID = 660947212581865645L;
 	protected String id;
-	protected double myUtility;
 	protected HashMap<String, Double> children;
 	protected String parentPos, parentId;
 	protected HashMap<String, Object> attributes;
 	
-	public AbstractFlood(String id, double myUtility){
+	public AbstractFlood(String id){
 		this.id = id;
-		this.myUtility = myUtility;
 		this.attributes = new HashMap<String, Object>();
 		this.children= new HashMap<String, Double>();
 	}
@@ -122,16 +120,13 @@ abstract class AbstractFlood implements Flood {
 	}
 
 	@Override
-	public void setUtility(String localName, double utility) {
+	public void setChildUtility(String localName, double utility) {
 		children.put(localName, utility);
 	}
 
-	@Override
-	public void setUtility(double utility) {
-		this.myUtility = utility;
-	}
-	
 	public abstract String transmitUtility();
+	
+	public abstract double getMyUtility();
 	
 	@Override
 	public void removeAllChild() {

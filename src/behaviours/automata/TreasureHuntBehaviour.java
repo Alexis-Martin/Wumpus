@@ -20,14 +20,21 @@ public class TreasureHuntBehaviour extends OneShotBehaviour {
 	public void action() {
 		
 		String protocolId = agent.getLocalName()+"_"+agent.getCurrentPosition();
-		Flood flood = new TreasureFlood(protocolId, agent.getBackPackFreeSpace());
+		int treasure_cap = agent.getMap().getNode(agent.getCurrentPosition()).getAttribute("treasure#");
+		int capacity = agent.getCapacity();
+		int quantity = capacity - agent.getBackPackFreeSpace();
+		Flood flood = new TreasureFlood(protocolId);
+		flood.setAttribute("treasure", treasure_cap);
+		flood.setAttribute("capacity", capacity);
+		flood.setAttribute("quantity", quantity);
 		flood.setParentId(null);
 		flood.setParentPos(null);
 		agent.addFlood(protocolId, flood);
 		//ajouter params a flood
 		System.out.println("\n\n\n\n\n\n" + agent.getLocalName() + " lance le flood");
+		System.out.println(agent.getLocalName() + " (C, q, T) = (" + capacity + ", " + quantity + ", " + treasure_cap + ")");
+
 		agent.addBehaviour(new TransmitFloodBehaviour(agent, protocolId));
 		agent.setStandBy(true);
-		agent.setTreasure(true);
 	}
 }

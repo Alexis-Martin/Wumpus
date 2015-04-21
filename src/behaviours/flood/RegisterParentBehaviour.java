@@ -29,7 +29,6 @@ public class RegisterParentBehaviour extends SimpleBehaviour {
 		final ACLMessage msg = agent.receive(msgTemplate);
 		
 		if(msg != null){
-			System.out.println(this.agent.getLocalName() + " ");
 			agent.addBehaviour(new TransmitFloodBehaviour(agent, protocol));
 			finished = true;
 			receive = true;

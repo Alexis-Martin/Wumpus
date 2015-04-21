@@ -24,21 +24,22 @@ public class CatchFloodBehaviour extends SimpleBehaviour {
 		final ACLMessage msg = agent.receive(msgTemplate);
 		if (msg != null) {
 			this.agent.setStandBy(true); 
-			System.out.println(this.agent.getLocalName() + " receptionne le message de flood");
 			Flood flood;
 			try {
 				flood = (Flood) msg.getContentObject();
-				flood.setUtility(agent.getBackPackFreeSpace());
+				int capacity = agent.getCapacity();
+				int quantity = capacity - agent.getBackPackFreeSpace();
+				flood.setAttribute("capacity", capacity);
+				flood.setAttribute("quantity", quantity);
+				System.out.println(agent.getLocalName() + " (C, q, T) = (" + capacity + ", " + quantity + ", " + flood.getAttribute("treasure") + ")");
+
 				if(!this.agent.containsFlood(flood.getId()) && !agent.getMap().goTo(agent.getCurrentPosition(), flood.getParentPos()).isEmpty()){
 					this.agent.addFlood(flood.getId(), flood);
-					System.out.println(this.agent.getLocalName() + " ajoute le flood");
 					
 				}else{
 					return;
 				}
 				
-				System.out.println(this.agent.getLocalName() + " envoi le ack");
-
 				final ACLMessage msgSend = new ACLMessage(ACLMessage.AGREE);
 				msgSend.setProtocol(flood.getId());
 				msgSend.setSender(this.agent.getAID());

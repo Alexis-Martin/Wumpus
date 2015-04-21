@@ -28,7 +28,6 @@ public class TransmitEchoBehaviour extends SimpleBehaviour {
 		msgSend.addReceiver(new AID(this.agent.getFlood(protocol).getParentId(), AID.ISLOCALNAME));
 		msgSend.setContent(message);
 		agent.sendMessage(msgSend);
-		System.out.println(this.agent.getLocalName() + " a envoye l'echo");
 		agent.addBehaviour(new CatchResultBehaviour(agent, protocol));
 		this.finished = true;
 	}

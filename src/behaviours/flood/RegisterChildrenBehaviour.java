@@ -29,7 +29,6 @@ public class RegisterChildrenBehaviour extends SimpleBehaviour {
 		if(msg != null){
 			String child = msg.getSender().getLocalName();
 			this.agent.getFlood(this.protocol).addChild(child);
-			System.out.println(this.agent.getLocalName() + " enregistre le fils " + child);
 
 			final ACLMessage msgSend = new ACLMessage(ACLMessage.CONFIRM);
 			msgSend.setProtocol(this.protocol);
@@ -52,7 +51,11 @@ public class RegisterChildrenBehaviour extends SimpleBehaviour {
 			this.agent.addBehaviour(new CatchEchoBehaviour(agent, protocol));
 		
 		else if(finished && !this.agent.getFlood(protocol).hasChild() && this.agent.getFlood(protocol).hasParent()){
-			this.agent.getFlood(protocol).setUtility(this.agent.getBackPackFreeSpace());
+			Flood flood = this.agent.getFlood(protocol);
+			int capacity = agent.getCapacity();
+			int quantity = capacity - agent.getBackPackFreeSpace();
+			flood.setAttribute("capacity", capacity);
+			flood.setAttribute("quantity", quantity);
 			this.agent.addBehaviour(new TransmitEchoBehaviour(agent, protocol));
 		}
 		else if(finished && !this.agent.getFlood(protocol).hasChild() && !this.agent.getFlood(protocol).hasParent()){

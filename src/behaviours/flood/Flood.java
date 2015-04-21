@@ -41,10 +41,10 @@ public interface Flood extends Serializable {
 	
 	public HashMap<String, Object> getAttributes();
 	
-	public void setUtility(String localName, double utility);
-
-	public void setUtility(double utility);
-
+	public void setChildUtility(String localName, double utility);
+	
+	public double getMyUtility();
+	
 	void setParentPos(String parentPos);
 
 	public void removeAllChild();

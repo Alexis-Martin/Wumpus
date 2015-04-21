@@ -30,10 +30,8 @@ public class CatchResultBehaviour extends SimpleBehaviour {
 		final ACLMessage msg = agent.receive(msgTemplate);
 		
 		if(msg != null){
-			System.out.println(this.agent.getLocalName() + " recoit le resultat");
 			Flood flood = agent.getFlood(protocol);
 			if(msg.getContent().equals("dismiss")){
-				System.out.println("\t negatif je trace ma route");
 				final ACLMessage msgDismiss = new ACLMessage(ACLMessage.REQUEST);
 				msgDismiss.setProtocol(this.protocol);
 				msgDismiss.setSender(this.agent.getAID());
@@ -49,8 +47,12 @@ public class CatchResultBehaviour extends SimpleBehaviour {
 					ArrayList<String> path = null;
 					try {
 						path = (ArrayList<String>) msg.getContentObject();
-						System.out.println(this.agent.getLocalName() + " vais prendre le tresor en " + path.get(path.size() - 1));
+						System.out.println(this.agent.getLocalName() + " vas prendre le tresor en " + path.get(path.size() - 1));
+						
+						System.out.println(agent.getLocalName() + " (C, q, T) = (" + flood.getAttribute("capacity") + ", " + flood.getAttribute("quantity") + ", " + flood.getAttribute("treasure") + ")");
+					
 						agent.setFollow(true);
+						agent.setTreasure(true);
 						agent.setStackMove(path);
 					} catch (UnreadableException e) {
 						e.printStackTrace();
@@ -59,7 +61,6 @@ public class CatchResultBehaviour extends SimpleBehaviour {
 					
 				}
 				else{
-					System.out.println("\t je transmet le résultat à mon fils et je me casse");
 					ArrayList<String> path;
 					try {
 						path = (ArrayList<String>) msg.getContentObject();
