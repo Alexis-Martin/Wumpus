@@ -295,8 +295,13 @@ public class Map extends SingleGraph{
 		if(min == 6)
 			min = 0;
 		
-		if(min >= 3)
+		else if(min >= 2 && (boolean)this.getNode(room).getAttribute("visited?"))
+			min = 1;
+			
+		else if(min >= 3)
 			min = 2;
+		
+		
 		
 		this.getNode(room).addAttribute("well#", min+1);
 		

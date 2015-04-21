@@ -18,7 +18,8 @@ public class SynchronizeAgentBehaviour extends OneShotBehaviour {
 	@Override
 	public void action() {
 		System.out.println(agent.getLocalName()+" start its automota");
-		
+		agent.setCapacity(agent.getBackPackFreeSpace());
+		System.out.println(agent.getLocalName()+ " capacity " + agent.getCapacity());
 		boolean surrounded = true;
 		Couple<String,List<Attribute>> localObs = null;
 		String myPosition = agent.getCurrentPosition();
