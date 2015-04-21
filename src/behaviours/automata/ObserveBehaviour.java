@@ -29,12 +29,6 @@ public class ObserveBehaviour extends OneShotBehaviour {
 		String myPosition = agent.getCurrentPosition();
 		String log = "";
 		
-		nextState = 0;
-		if(agent.isStandBy()){
-			nextState = HunterAgent.STAND_BY;
-			this.block(this.pause);
-			return;
-		}
 		log += "\nPosition of agent "+agent.getLocalName()+" : "+myPosition;
 		if (myPosition!=""){
 			List<Couple<String,List<Attribute>>> lobs = agent.observe(myPosition);
@@ -51,19 +45,24 @@ public class ObserveBehaviour extends OneShotBehaviour {
 					if (n.hasAttribute("treasure#") && (int) n.getAttribute("treasure#") > 0){
 						this.nextState = 1;
 					}
+					agent.getMap().updateLayout(n, true);
 					continue;
 				}
 				
 				//Try to add a new room to the graph
 				Node n = agent.getMap().addRoom(pos, false, c.getR());
+				agent.getDiff().addRoom(n);
 				if(agent.getMap().addRoad(myPosition, pos)){
-					agent.getDiff().addRoom(n);
 					agent.getDiff().addRoad(agent.getMap().getEdge(agent.getMap().getEdgeId(myPosition, pos)));
 				}
 			}
 		}
 		//System.out.println(log);
 		this.block(this.pause);
+		nextState = 0;
+		if(agent.isStandBy()){
+			nextState = HunterAgent.STAND_BY;
+		}
 	}
 	
 	public int onEnd(){

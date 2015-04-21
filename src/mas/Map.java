@@ -286,6 +286,9 @@ public class Map extends SingleGraph{
 		if(min == 6)
 			min = 0;
 		
+		if(min >= 3)
+			min = 2;
+		
 		this.getNode(room).addAttribute("well#", min+1);
 		
 		if(getWell(room) == 3){
