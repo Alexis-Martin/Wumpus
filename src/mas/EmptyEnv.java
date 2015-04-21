@@ -60,8 +60,8 @@ public class EmptyEnv {
 	public static void main(String[] args){
 		System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 		//0) Create the real environment and the observed one
-//		env= new Environment(ENVtype.DOROGOVTSEV_W, 400);
-		env= new Environment(ENVtype.DOROGOVTSEV_W, 30);
+		//env= new Environment(ENVtype.DOROGOVTSEV_W, 40);
+		env= new Environment(ENVtype.GRID_WT, 10);
 		
 		
 		//1), create the platform (Main container (DF+AMS) + containers + monitoring agents : RMA and SNIFFER)

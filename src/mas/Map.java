@@ -258,6 +258,7 @@ public class Map extends SingleGraph{
 	}
 	
 	public void updateWell(String pos, List<Couple<String,List<Attribute>>> obs){
+		List<String> well3 = new ArrayList<String>();
 		for(Couple<String,List<Attribute>> c : obs){
 			String r = c.getL();
 			if(r.equals(pos)){
@@ -266,10 +267,18 @@ public class Map extends SingleGraph{
 			for(Attribute a : c.getR()){
 				if(a.getName().equals("Wind")){
 					this.setWell(r);
+					if(getWell(r) == 3){
+						well3.add(r);
+					}
 				}
 			}
+			
 			this.updateLayout(this.getNode(r));
 		}
+		
+		for(String node : well3)
+			isWell(node);
+		
 	}
 	
 	
@@ -290,10 +299,6 @@ public class Map extends SingleGraph{
 			min = 2;
 		
 		this.getNode(room).addAttribute("well#", min+1);
-		
-		if(getWell(room) == 3){
-			isWell(room);
-		}
 		
 	}
 	

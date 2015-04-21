@@ -26,6 +26,7 @@ public class ObserveBehaviour extends OneShotBehaviour {
 	
 	@Override
 	public void action() {
+		nextState = 0;
 		String myPosition = agent.getCurrentPosition();
 		String log = "";
 		
@@ -59,7 +60,7 @@ public class ObserveBehaviour extends OneShotBehaviour {
 		}
 		//System.out.println(log);
 		this.block(this.pause);
-		nextState = 0;
+		
 		if(agent.isStandBy()){
 			nextState = HunterAgent.STAND_BY;
 		}
