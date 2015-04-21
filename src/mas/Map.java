@@ -86,6 +86,7 @@ public class Map extends SingleGraph{
 	
 	public Node addRoom(String id, boolean visited, List<Attribute> attr){
 		Node n = this.addRoom(id, visited);
+		n.addAttribute("treasure#", 0);
 		for(Attribute a:attr){
 			if(a.getName().equals("Treasure")){
 				n.addAttribute("treasure#", a.getValue());

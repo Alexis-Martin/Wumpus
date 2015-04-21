@@ -61,7 +61,7 @@ public class EmptyEnv {
 		System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 		//0) Create the real environment and the observed one
 //		env= new Environment(ENVtype.DOROGOVTSEV_W, 400);
-		env= new Environment(ENVtype.GRID_W, 8);
+		env= new Environment(ENVtype.DOROGOVTSEV_W, 30);
 		
 		
 		//1), create the platform (Main container (DF+AMS) + containers + monitoring agents : RMA and SNIFFER)
@@ -282,7 +282,7 @@ public class EmptyEnv {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		/*
+		
 		c = containerList.get("container0");
 		agentName="Delta";
 		try {
@@ -316,7 +316,6 @@ public class EmptyEnv {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		*/
 		
 		System.out.println("Agents launched...");
 		return agentList;
