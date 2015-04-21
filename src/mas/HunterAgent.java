@@ -71,7 +71,8 @@ public class HunterAgent extends abstractAgent {
 				 + "node.well3{stroke-mode:plain; stroke-color:orange; stroke-width:3;}"
 		         + "node.well4{stroke-mode:plain; stroke-color:red; stroke-width:3;}";
 		map.addAttribute("ui.stylesheet", stylesheet);
-		map.display();
+		if(this.getLocalName().equals("Alpha"))
+			map.display();
 //		this.capacity = getBackPackFreeSpace();
 		diff = new Map(this.getLocalName()+"_diff", false);
 		//diff.addAttribute("ui.stylesheet", stylesheet);
@@ -175,12 +176,10 @@ public class HunterAgent extends abstractAgent {
 
 	public void addFlood(String protocolId, Flood flood) {
 		this.floods.put(protocolId, flood);
-		System.out.println(getLocalName() + " ajoute le flood " + protocolId + " dans la HashMap");
-		System.out.println("Le flood est : " + floods.get(protocolId));
+
 	}
 
 	public Flood getFlood(String protocole) {
-		System.out.println(getLocalName() + " renvoi le flood " + floods.get(protocole));
 		return floods.get(protocole);
 	}
 
@@ -222,7 +221,6 @@ public class HunterAgent extends abstractAgent {
 	}
 
 	public void removeFlood(String protocol) {
-		System.out.println(getLocalName() + " supprime le flood " + protocol);
 		this.floods.remove(protocol);
 	}
 
@@ -268,6 +266,10 @@ public class HunterAgent extends abstractAgent {
 
 	public void setFollow(boolean b) {
 		follow = b;
+	}
+
+	public void setCapacity(int capacity) {
+		this.capacity = capacity;
 	}
 
 }
