@@ -42,6 +42,9 @@ public class CatchEchoBehaviour extends SimpleBehaviour {
 		if(finished){
 			Flood flood = this.agent.getFlood(protocol);
 			String best = flood.getBestId();
+			if(flood.getBestValue() == 0){
+				best = null;
+			}
 			
 
 			final ACLMessage msgDismiss = new ACLMessage(ACLMessage.REQUEST);
@@ -61,9 +64,13 @@ public class CatchEchoBehaviour extends SimpleBehaviour {
 			agent.sendMessage(msgDismiss);
 			
 			if(!flood.hasParent() && best == null){	
-				ArrayList<String> path = new ArrayList<String>();
-				flood.setAttribute("path", path);
-				this.agent.elected(protocol);
+				if(flood.getBestValue() == 0){
+					System.out.println("Best utility for flood "+ protocol+" is 0. Nobody is elected");
+				}else{
+					ArrayList<String> path = new ArrayList<String>();
+					flood.setAttribute("path", path);
+					this.agent.elected(protocol);
+				}
 				this.agent.setStandBy(false);
 			}
 			else if(!flood.hasParent() && best != null){

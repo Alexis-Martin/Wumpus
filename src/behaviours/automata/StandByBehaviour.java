@@ -1,5 +1,6 @@
 package behaviours.automata;
 
+import behaviours.flood.Flood;
 import mas.HunterAgent;
 import jade.core.behaviours.OneShotBehaviour;
 
@@ -24,11 +25,10 @@ public class StandByBehaviour extends OneShotBehaviour {
 			block(this.timeout);
 		}else{
 			if(agent.isTreasure()){
-				this.nextState = 1;
+				this.nextState = Flood.TreasureHunt;
 			}
-			else if(agent.isRiskWell()){
-				this.nextState = 2;
-				agent.setRiskWell(false);
+			else if(agent.isRisk()){
+				this.nextState = Flood.Risk;
 			}
 			else
 				this.nextState = 3;

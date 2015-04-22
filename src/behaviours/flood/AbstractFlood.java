@@ -22,8 +22,12 @@ abstract class AbstractFlood implements Flood {
 		this.children= new HashMap<String, Double>();
 		this.type = t;
 	}
+	
 	@Override
-	public abstract String getMessage();
+	public String getMessage() {
+		
+		return null;
+	}
 
 	@Override
 	public String getParentId() {
@@ -65,10 +69,13 @@ abstract class AbstractFlood implements Flood {
 	}
 
 	@Override
-	public abstract String getBestChild();
-
-	@Override
-	public abstract Flood transmitFlood(String parentId, String parentPos);
+	public Flood transmitFlood(String parentId, String parentPos) {
+		Flood flood = clone();
+		flood.setParentPos(parentPos);
+		flood.setParentId(parentId);
+		flood.removeAllChild();
+		return flood;
+	}
 
 	@Override
 	public void setParentId(String parentId) {
@@ -111,9 +118,9 @@ abstract class AbstractFlood implements Flood {
 			children.remove(child);
 		}
 	}
-
+	
 	@Override
-	public abstract String getBestId();
+	public abstract String getBestChild();
 
 	@Override
 	public boolean hasAllUtilities() {
@@ -129,7 +136,13 @@ abstract class AbstractFlood implements Flood {
 		children.put(localName, utility);
 	}
 
-	public abstract String transmitUtility();
+	@Override
+	public String transmitUtility(){
+		String best = getBestId();
+		if(best == null)
+			return "" + getMyUtility();
+		return "" + children.get(best);
+	}
 	
 	public abstract double getMyUtility();
 	

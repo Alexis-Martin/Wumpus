@@ -17,7 +17,7 @@ public class ObserveTreasureBehaviour extends OneShotBehaviour {
 	public void action() {
 		//observe
 		//si pas wumpus
-		if(agent.isFollow())
+		if(agent.isFollowing())
 			nextState = 0;
 		else
 			nextState = 4;

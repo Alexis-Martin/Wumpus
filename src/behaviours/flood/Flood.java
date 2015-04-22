@@ -6,6 +6,7 @@ import java.util.Set;
 
 public interface Flood extends Serializable {
 	public static int TreasureHunt = 1;
+	public static int Risk = 2;
 	
 	public String getMessage();
 	
@@ -54,5 +55,7 @@ public interface Flood extends Serializable {
 	public Flood clone();
 	
 	public int getType();
+
+	double getBestValue();
 
 }

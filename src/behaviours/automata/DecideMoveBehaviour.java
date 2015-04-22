@@ -60,8 +60,10 @@ public class DecideMoveBehaviour extends OneShotBehaviour {
 		
 		if(possible.isEmpty()){
 			System.out.println(agent.getLocalName()+" in "+agent.getCurrentPosition()+" can't move anywhere");
+			//attendre un peut puis lancer RiskBehaviour
 			nextState = 2;
 			agent.setStandBy(true);
+			agent.setSinglePush(true);
 			return;
 		}
 		

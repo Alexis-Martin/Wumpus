@@ -10,9 +10,11 @@ import java.util.Set;
 import org.graphstream.graph.Edge;
 
 import behaviours.automata.DecideMoveBehaviour;
+import behaviours.automata.ExploreBehaviour;
 import behaviours.automata.FetchTreasureBehaviour;
 import behaviours.automata.MoveBehaviour;
 import behaviours.automata.ObserveBehaviour;
+import behaviours.automata.RiskBehaviour;
 import behaviours.automata.StandByBehaviour;
 import behaviours.automata.TreasureHuntBehaviour;
 import behaviours.flood.CatchFloodBehaviour;
@@ -34,12 +36,14 @@ public class HunterAgent extends abstractAgent {
 	protected boolean randomWalk = false;
 	protected boolean standBy = false;
 	private boolean catchTreasure = false;
-	private boolean riskWell = false;
+	private boolean risk = false;
 	private boolean follow = false;
+	private String following= null;
+	private int nbStep;
 	
 	private HashMap<String, Flood> floods;
-	String currentFlood;
 	private int capacity;
+	private boolean singlePush = false;
 	
 	/**
 	 * This method is automatically called when "agent".start() is executed.
@@ -50,7 +54,6 @@ public class HunterAgent extends abstractAgent {
 	 */
 	@SuppressWarnings("unchecked")
 	protected void setup(){
-
 		super.setup();
 		this.teamMates = new HashMap<String, String>();
 		this.floods = new HashMap<String, Flood>();
@@ -102,12 +105,15 @@ public class HunterAgent extends abstractAgent {
 		dispach_behaviour.registerState(new TreasureHuntBehaviour(this), "TreasureHunt");
 		dispach_behaviour.registerState(new StandByBehaviour(this), "StandBy");
 		dispach_behaviour.registerState(new FetchTreasureBehaviour(this), "FetchTreasure");
+		dispach_behaviour.registerState(new RiskBehaviour(this), "Risk");
+		dispach_behaviour.registerState(new ExploreBehaviour(this), "Explore");
 
 		dispach_behaviour.registerLastState(new MessageBehaviour(this), "End");
 
 		dispach_behaviour.registerDefaultTransition("Sync", "Observe");
 		dispach_behaviour.registerTransition("Observe", "Decide", 0);
 		dispach_behaviour.registerTransition("Observe", "TreasureHunt", 1);
+		dispach_behaviour.registerTransition("Observe", "Risk", 3);
 		dispach_behaviour.registerTransition("Observe", "End", 10);
 		dispach_behaviour.registerTransition("Observe", "StandBy", STAND_BY);
 		dispach_behaviour.registerTransition("Decide", "Move", 0);
@@ -118,15 +124,23 @@ public class HunterAgent extends abstractAgent {
 		dispach_behaviour.registerTransition("StandBy", "StandBy", 0);
 		dispach_behaviour.registerTransition("StandBy", "Decide", 3);
 		dispach_behaviour.registerTransition("StandBy", "FetchTreasure", Flood.TreasureHunt);
+		dispach_behaviour.registerTransition("StandBy", "Explore", Flood.Risk);
 		dispach_behaviour.registerTransition("TreasureHunt", "StandBy", 0);
 		dispach_behaviour.registerTransition("TreasureHunt", "Decide", 1);
+		dispach_behaviour.registerTransition("Risk", "StandBy", 0);
+		dispach_behaviour.registerTransition("Risk", "Decide", 1);
 		dispach_behaviour.registerTransition("FetchTreasure", "FetchTreasure", 0);
 		dispach_behaviour.registerTransition("FetchTreasure", "Observe", 1);
+		dispach_behaviour.registerTransition("Explore", "Explore", 0);
+		dispach_behaviour.registerTransition("Explore", "Observe", 1);
 
 		addBehaviour(dispach_behaviour);
 		addBehaviour(new PushMapBehaviour(this));
 		addBehaviour(new PullMapBehaviour(this));
 		addBehaviour(new CatchFloodBehaviour(this));
+		
+		nbStep = 0;
+		
 		System.out.println("the agent "+this.getLocalName()+ " is started");
 
 	}
@@ -156,6 +170,7 @@ public class HunterAgent extends abstractAgent {
 		
 		//update layout (position color of nodes + edge)
 		this.map.updateUIMarkers(myPosition, myDestination);
+		nbStep++;
 		return move;
 	}
 	
@@ -165,25 +180,31 @@ public class HunterAgent extends abstractAgent {
 		if(f.getType() == Flood.TreasureHunt){
 			List<String> path = (List<String>) f.getAttribute("path");
 			System.out.println(this.getLocalName() + " elected best for the flood "+protocol);
-			
 			if(!this.isStackMoveEmpty()){
 				System.out.println(this.getLocalName()+" is already heading to "+ this.getStackMove().get(this.getStackMove().size()-1));
-				this.removeFlood(protocol);
-				this.standBy = false;
 				return;
-			}
-			
-			if(path.isEmpty()){
-				System.out.println(this.getLocalName()+" is going to pick up the treasure");
 			}else{
-				System.out.println(this.getLocalName() + " vas prendre le tresor en " + path.get(path.size() - 1));
-				System.out.println(path);
+				if(path.isEmpty()){
+					System.out.println(this.getLocalName()+" is going to pick up the treasure");
+				}else{
+					System.out.println(this.getLocalName() + " vas prendre le tresor en " + path.get(path.size() - 1));
+					System.out.println(path);
+				}
+				this.setTreasure(true);
+				this.setStackMove(path);
 			}
-			this.setTreasure(true);
+		}else if (f.getType() == Flood.Risk){
+			List<String> path = (List<String>) f.getAttribute("path");
+			if(f.hasParent()){
+				System.out.println(this.getLocalName()+" is going on an adventure ! at "+ path.get(path.size() - 1));
+			}else{
+				System.out.println(this.getLocalName()+" is going on an adventure ! ");
+				this.setStackMove(null);
+			}
+			this.setRisk(true);
 			this.setStackMove(path);
-			this.standBy = false;
-			currentFlood = protocol;
 		}
+		this.standBy = false;
 		this.removeFlood(protocol);
 	}
 
@@ -257,16 +278,28 @@ public class HunterAgent extends abstractAgent {
 		catchTreasure = b;
 	}
 
-	public boolean isRiskWell() {
-		return riskWell;
+	public boolean isRisk() {
+		return risk;
 	}
 
-	public void setRiskWell(boolean b) {
-		riskWell = b;
+	public void setRisk(boolean b) {
+		risk = b;
 	}
 
-	public boolean isFollow() {
+	public boolean isFollowing() {
 		return follow;
+	}
+	
+	public void setFollow(boolean b) {
+		follow = b;
+	}
+	
+	public void setFollowing(String aId){
+		this.following = aId;
+	}
+	
+	public String getFollowing(){
+		return this.following;
 	}
 	
 	public void setStackMove(List<String> stackMove){
@@ -290,10 +323,6 @@ public class HunterAgent extends abstractAgent {
 		return stackMove.isEmpty();
 	}
 
-	public void setFollow(boolean b) {
-		follow = b;
-	}
-
 	public void setCapacity(int capacity) {
 		this.capacity = capacity;
 	}
@@ -302,8 +331,16 @@ public class HunterAgent extends abstractAgent {
 		return !this.floods.isEmpty();
 	}
 	
-	public String getCurrentFlood(){
-		return currentFlood;
+	public int getNbStep(){
+		return nbStep;
+	}
+
+	public boolean singlePush() {
+		return singlePush ;
+	}
+
+	public void setSinglePush(boolean b) {
+		singlePush = b;
 	}
 
 }

@@ -23,8 +23,8 @@ public class PushMapBehaviour extends TickerBehaviour {
 	
 	@Override
 	protected void onTick() {
-		if(((agent.getDiff().getEdgeSet().size() > k || i > 10) && agent.getDiff().getNodeSet().size() > k) || i > k*k){
-			
+		if((((agent.getDiff().getEdgeSet().size() > k || i > 10) && agent.getDiff().getNodeSet().size() > k) || i > k*k) || agent.singlePush()){
+			agent.setSinglePush(false);
 			//update attributes
 			for(Node n : agent.getDiff().getNodeSet()){
 				Node node = agent.getMap().getNode(n.getId());

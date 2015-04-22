@@ -16,7 +16,7 @@ public class abstractAgent extends Agent {
 	 * The environment topology is used to compute the reachable agents.
 	 * For now, they all share the same communication range.
 	 */
-	private static final int COMMUNICATION_REACH=10;
+	private static final int COMMUNICATION_REACH=20;
 	
 	protected Environment realEnv;
 

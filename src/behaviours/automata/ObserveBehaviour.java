@@ -1,5 +1,6 @@
 package behaviours.automata;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import mas.HunterAgent;
@@ -11,14 +12,11 @@ import env.Environment.Couple;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class ObserveBehaviour extends OneShotBehaviour {
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -7959229920398697586L;
 	private HunterAgent agent;
 	private int nextState = 0;
 	private final long pause = 1500;
+	private int nbStepBeforeRisk = 7;
 	
 	public ObserveBehaviour(HunterAgent agent){
 		this.agent = agent;
@@ -29,6 +27,7 @@ public class ObserveBehaviour extends OneShotBehaviour {
 		nextState = 0;
 		String myPosition = agent.getCurrentPosition();
 		String log = "";
+		boolean risk = false;
 		
 		log += "\nPosition of agent "+agent.getLocalName()+" : "+myPosition;
 		if (myPosition!=""){
@@ -56,6 +55,9 @@ public class ObserveBehaviour extends OneShotBehaviour {
 				if(agent.getMap().addRoad(myPosition, pos)){
 					agent.getDiff().addRoad(agent.getMap().getEdge(agent.getMap().getEdgeId(myPosition, pos)));
 				}
+				if(n.hasAttribute("well#") && (int) n.getAttribute("well#") == 3){
+					risk = true;
+				}
 			}
 		}
 		//System.out.println(log);
@@ -63,6 +65,9 @@ public class ObserveBehaviour extends OneShotBehaviour {
 		
 		if(agent.isStandBy()){
 			nextState = HunterAgent.STAND_BY;
+		}else if(agent.getNbStep() > nbStepBeforeRisk && risk){
+			//ajout d'une proba de lancer le flood pour les limiter??
+			nextState = 3;
 		}
 	}
 	
