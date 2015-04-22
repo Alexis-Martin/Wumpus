@@ -31,9 +31,9 @@ public class CatchFloodBehaviour extends SimpleBehaviour {
 				int quantity = capacity - agent.getBackPackFreeSpace();
 				flood.setAttribute("capacity", capacity);
 				flood.setAttribute("quantity", quantity);
-				System.out.println(agent.getLocalName() + " (C, q, T) = (" + capacity + ", " + quantity + ", " + flood.getAttribute("treasure") + ")");
 
-				if(!this.agent.containsFlood(flood.getId()) && !agent.getMap().goTo(agent.getCurrentPosition(), flood.getParentPos()).isEmpty()){
+				if(!agent.isInAFlood() && !agent.getMap().goTo(agent.getCurrentPosition(), flood.getParentPos()).isEmpty()){
+					System.out.println(agent.getLocalName() + " (C, q, T) = (" + capacity + ", " + quantity + ", " + flood.getAttribute("treasure") + ")"+" in the flood "+flood.getId());
 					this.agent.addFlood(flood.getId(), flood);
 					
 				}else{

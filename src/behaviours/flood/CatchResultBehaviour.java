@@ -2,7 +2,6 @@ package behaviours.flood;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import mas.HunterAgent;
 import jade.core.AID;
@@ -41,24 +40,26 @@ public class CatchResultBehaviour extends SimpleBehaviour {
 				}	
 				msgDismiss.setContent("dismiss");
 				agent.sendMessage(msgDismiss);
+				agent.removeFlood(protocol);
 			}
 			else{
 				if(!flood.hasChild()){
 					ArrayList<String> path = null;
 					try {
-						
 						path = (ArrayList<String>) msg.getContentObject();
 						ArrayList<String> path2 = agent.getMap().goTo(agent.getCurrentPosition(), path.get(path.size() - 1));
 						if(path2 != null && !path2.isEmpty())
 							path = path2;
+						else{
+							ArrayList<String> path_to_father = agent.getMap().goTo(this.agent.getCurrentPosition(), this.agent.getFlood(protocol).getParentPos());
+							for(int i = 0; i < path.size()-1; i++){
+								path_to_father.add(path.get(i));
+							}
+							path = path_to_father;
+						}
 						
-						System.out.println(this.agent.getLocalName() + " vas prendre le tresor en " + path.get(path.size() - 1));
-						
-						System.out.println(agent.getLocalName() + " (C, q, T) = (" + flood.getAttribute("capacity") + ", " + flood.getAttribute("quantity") + ", " + flood.getAttribute("treasure") + ")");
-					
-						agent.setFollow(true);
-						agent.setTreasure(true);
-						agent.setStackMove(path);
+						flood.setAttribute("path", path);
+						agent.elected(protocol);
 					} catch (UnreadableException e) {
 						e.printStackTrace();
 					}
@@ -86,10 +87,9 @@ public class CatchResultBehaviour extends SimpleBehaviour {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					
+					agent.removeFlood(protocol);
 				}
 			}
-			agent.removeFlood(protocol);
 			agent.setStandBy(false);
 			finished = true;
 		}else

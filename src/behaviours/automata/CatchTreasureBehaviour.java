@@ -1,15 +1,10 @@
 package behaviours.automata;
 
-import java.util.List;
-
-import env.Attribute;
-import env.Environment.Couple;
 import mas.HunterAgent;
-import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class CatchTreasureBehaviour extends OneShotBehaviour {
-
+	private static final long serialVersionUID = -8262609675222792477L;
 	private HunterAgent agent;
 	
 	public CatchTreasureBehaviour(HunterAgent a) {

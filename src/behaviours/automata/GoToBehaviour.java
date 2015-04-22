@@ -1,7 +1,6 @@
 package behaviours.automata;
 
 import mas.HunterAgent;
-import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class GoToBehaviour extends OneShotBehaviour {
@@ -21,7 +20,7 @@ public class GoToBehaviour extends OneShotBehaviour {
 	@Override
 	public void action() {
 		agent.setNextMove(agent.popStackMove());
-		if(agent.stackMoveEmpty())
+		if(agent.isStackMoveEmpty())
 			agent.setFollow(false);
 	}
 

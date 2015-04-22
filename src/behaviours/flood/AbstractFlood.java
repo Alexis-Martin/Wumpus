@@ -1,7 +1,6 @@
 package behaviours.flood;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 abstract class AbstractFlood implements Flood {
@@ -11,11 +10,17 @@ abstract class AbstractFlood implements Flood {
 	protected HashMap<String, Double> children;
 	protected String parentPos, parentId;
 	protected HashMap<String, Object> attributes;
+	protected int type;
 	
-	public AbstractFlood(String id){
+	private AbstractFlood(){
+	}
+	
+	public AbstractFlood(String id, int t){
+		this();
 		this.id = id;
 		this.attributes = new HashMap<String, Object>();
 		this.children= new HashMap<String, Double>();
+		this.type = t;
 	}
 	@Override
 	public abstract String getMessage();
@@ -134,6 +139,11 @@ abstract class AbstractFlood implements Flood {
 	}
 	@Override
 	public abstract Flood clone();
+	
+	@Override
+	public int getType(){
+		return type;
+	}
 	
 
 }

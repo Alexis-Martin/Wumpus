@@ -7,9 +7,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -62,11 +60,11 @@ public class CatchEchoBehaviour extends SimpleBehaviour {
 			msgDismiss.setContent("dismiss");
 			agent.sendMessage(msgDismiss);
 			
-			if(!flood.hasParent() && best == null){
-				System.out.println(agent.getLocalName() + " (C, q, T) = (" + flood.getAttribute("capacity") + ", " + flood.getAttribute("quantity") + ", " + flood.getAttribute("treasure") + ")");
-				this.agent.pick();
+			if(!flood.hasParent() && best == null){	
+				ArrayList<String> path = new ArrayList<String>();
+				flood.setAttribute("path", path);
+				this.agent.elected(protocol);
 				this.agent.setStandBy(false);
-				this.agent.removeFlood(protocol);
 			}
 			else if(!flood.hasParent() && best != null){
 				final ACLMessage msgAccept = new ACLMessage(ACLMessage.REQUEST);

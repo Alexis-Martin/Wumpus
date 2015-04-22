@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Set;
 
 public interface Flood extends Serializable {
+	public static int TreasureHunt = 1;
+	
 	public String getMessage();
 	
 	public String getParentId();
@@ -50,5 +52,7 @@ public interface Flood extends Serializable {
 	public void removeAllChild();
 
 	public Flood clone();
+	
+	public int getType();
 
 }

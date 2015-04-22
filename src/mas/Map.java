@@ -119,11 +119,10 @@ public class Map extends SingleGraph{
 				
 	}
 	public ArrayList<String> goTo(String currentPosition, String dest){
-
 		SingleNode mine = this.getNode(currentPosition);
-		
 		ArrayList<SingleNode> file = new ArrayList<SingleNode>();
 		int tete = 0;
+		
 		file.add(mine);
 		mine.addAttribute("mark", (Object)null);
 		

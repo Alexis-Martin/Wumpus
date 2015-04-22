@@ -4,7 +4,7 @@ import mas.HunterAgent;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class ObserveTreasureBehaviour extends OneShotBehaviour {
-
+	private static final long serialVersionUID = -3476369989654462435L;
 	private HunterAgent agent;
 	private int nextState = 0;
 	private final long pause = 1500;

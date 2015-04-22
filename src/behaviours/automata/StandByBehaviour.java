@@ -25,7 +25,6 @@ public class StandByBehaviour extends OneShotBehaviour {
 		}else{
 			if(agent.isTreasure()){
 				this.nextState = 1;
-				agent.setTreasure(false);
 			}
 			else if(agent.isRiskWell()){
 				this.nextState = 2;

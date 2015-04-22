@@ -1,1 +1,1 @@
-http://192.168.0.19:7778/acc
+http://daedalus.home:7778/acc

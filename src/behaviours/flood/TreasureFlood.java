@@ -1,15 +1,13 @@
 package behaviours.flood;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
 public class TreasureFlood extends AbstractFlood {
 	private static final long serialVersionUID = 660947212581865645L;
 
 	
-	public TreasureFlood(String id){
-		super(id);
+	public TreasureFlood(String id, int type){
+		super(id, type);
 	}
 
 	@Override
@@ -65,7 +63,7 @@ public class TreasureFlood extends AbstractFlood {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Flood clone() {
-		TreasureFlood flood = new TreasureFlood(id);
+		TreasureFlood flood = new TreasureFlood(id, this.getType());
 		flood.setChildrenHashMap((HashMap<String, Double>) children.clone());
 		flood.setParentId(getParentId());
 		flood.setParentPos(getParentPos());
@@ -87,7 +85,7 @@ public class TreasureFlood extends AbstractFlood {
 		
 		if(capacity - quantity == 0)
 			return -1;
-		return (0.8 * (capacity + quantity) + 0.2 * (capacity - quantity - treasure) > 0)?0.8 * (capacity + quantity) + 0.2 * (capacity - quantity - treasure):0;
+		return (Math.pow(capacity, 2) - Math.pow(quantity, 2)) > 0 ? (Math.pow(capacity, 2) - Math.pow(quantity, 2)) : 0;
 	}
 
 

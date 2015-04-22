@@ -4,7 +4,6 @@ import mas.HunterAgent;
 import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 
 public class TransmitEchoBehaviour extends SimpleBehaviour {
 	private static final long serialVersionUID = -6013275079546582660L;

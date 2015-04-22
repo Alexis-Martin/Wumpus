@@ -1,7 +1,6 @@
 package behaviours.flood;
 
 import mas.HunterAgent;
-import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
