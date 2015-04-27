@@ -3,6 +3,9 @@ package behaviours.flood;
 import java.util.HashMap;
 import java.util.Set;
 
+/**
+ * Classe abstraite permettant de gérer les fonctions de l'interface Flood qui sont similaire à tous les floods  
+ */
 abstract class AbstractFlood implements Flood {
 	
 	private static final long serialVersionUID = 660947212581865645L;
@@ -22,12 +25,7 @@ abstract class AbstractFlood implements Flood {
 		this.children= new HashMap<String, Double>();
 		this.type = t;
 	}
-	
-	@Override
-	public String getMessage() {
-		
-		return null;
-	}
+
 
 	@Override
 	public String getParentId() {

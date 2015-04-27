@@ -1,8 +1,13 @@
 package behaviours.automata;
 
+import behaviours.WaitFollowerBehaviour;
 import behaviours.flood.Flood;
 import mas.HunterAgent;
 import jade.core.behaviours.OneShotBehaviour;
+
+/**
+ * Etat de l'automate ou on se met en pause afin de faire une autre action
+ */
 
 public class StandByBehaviour extends OneShotBehaviour {
 	private static final long serialVersionUID = -9136965155944199798L;
@@ -30,8 +35,17 @@ public class StandByBehaviour extends OneShotBehaviour {
 			else if(agent.isRisk()){
 				this.nextState = Flood.Risk;
 			}
+			else if(agent.isFollowing()){
+				this.nextState = Flood.Follow;
+			}
+			else if (agent.isWaitingFollower()){
+				agent.setStandBy(true);
+				agent.addBehaviour(new WaitFollowerBehaviour(agent));
+				
+			}
+
 			else
-				this.nextState = 3;
+				this.nextState = 4;
 		}
 	}
 	

@@ -1,6 +1,9 @@
-package mas;
+package behaviours;
 
 import java.io.IOException;
+
+import mas.HunterAgent;
+import mas.SerializationHelper;
 
 import org.graphstream.graph.Node;
 
@@ -8,6 +11,13 @@ import jade.core.AID;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 
+/**
+ * Envoi des messages de représentation du monde des autres HunterAgent.
+ *<br/>
+ *<br/> Fait parti des comportements de Base du HunterAgent
+ *<br/>
+ *<br/>Cette envoi est un message de type INFORM et est réalisé tous les 5 secondes. 
+ */
 public class PushMapBehaviour extends TickerBehaviour {
 	private static final long serialVersionUID = -2009988805814997107L;
 	private HunterAgent agent;

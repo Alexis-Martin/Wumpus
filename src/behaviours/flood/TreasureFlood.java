@@ -2,6 +2,9 @@ package behaviours.flood;
 
 import java.util.HashMap;
 
+/**
+ * Objet flood qui gère le flood pour trouver élire le meilleur pour ramasser un trésor
+ */
 public class TreasureFlood extends AbstractFlood {
 	private static final long serialVersionUID = 660947212581865645L;
 

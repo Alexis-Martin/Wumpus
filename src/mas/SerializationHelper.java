@@ -7,11 +7,16 @@ import java.util.List;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 
+/**
+ * Permet de sérialiser et désérialiser une représentation du monde
+ *
+ */
 public class SerializationHelper {
 	
 	/**
-	 * @param obs
-	 * @return
+	 * Serialise une map
+	 * @param map la représentation du monde
+	 * @return la map avec un format que l'on peut envoyer
 	 */
 	public static HashMap<String, List<String>> serializeMapInfo(Map map){
 		HashMap<String, List<String>> sMap = new HashMap<String, List<String>>();
@@ -43,7 +48,11 @@ public class SerializationHelper {
 		
 		return sMap;
 	}
-	
+	/**
+	 * désérialise une map
+	 * @param info la représentation du monde sous format sérialisé
+	 * @return une map
+	 */
 	public static Map deserializeMapInfo(HashMap<String, List<String>> info){
 		Map map = new Map();
 		for(String id : info.keySet()){
@@ -57,6 +66,10 @@ public class SerializationHelper {
 						if(attr.equals("well#") && n.hasAttribute("well#") && (int)n.getAttribute("well#") <= Integer.parseInt(split[1])){
 							continue;
 						}
+						else if(attr.equals("well#") && n.hasAttribute("well#") && (int)n.getAttribute("well#") >= Integer.parseInt(split[1])){
+							System.out.println("j'ai recu " + Integer.parseInt(split[1]) + " pour la force du puit de " + n.getId() + " et le mien est " + n.getAttribute("well#")+ ". Je met a jour!.");
+						}
+								
 						n.addAttribute(split[0]+"#", Integer.parseInt(split[1]));
 					}
 				}

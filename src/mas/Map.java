@@ -12,12 +12,24 @@ import org.graphstream.graph.implementations.SingleNode;
 import env.Attribute;
 import env.Environment.Couple;
 
+/**
+ * 
+ *Représentation du monde d'un HunterAgent.
+ *<br/>
+ *<br/>Formellement, un graph, GraphStream.
+ *
+ *
+ */
 public class Map extends SingleGraph{
 	
 	public Map(){
 		super("anonymous");
 	}
-	
+	/**
+	 * Construit un graph avec le nom id.
+	 * @param id le nom du graphe
+	 * @param display l'affiche si true
+	 */
 	public Map(String id, boolean display) {
 		super(id);
 		this.addAttribute("ui.quality");
@@ -27,6 +39,10 @@ public class Map extends SingleGraph{
 		}
 	}
 	
+	/**
+	 * copy l'ensemble d'une autre représentation du monde dans celle ci
+	 * @param map 
+	 */
 	public void merge(Map map){
 		for(Node n : map.getNodeSet()){
 			Node room = this.addRoom(n);
@@ -38,6 +54,12 @@ public class Map extends SingleGraph{
 		}
 	}
 
+	/**
+	 * Ajoute une route entre la pièce srcId et la pièce dstId
+	 * @param srcId le nom de la première pièce
+	 * @param dstId le nom de la deuxième
+	 * @return true si la route est ajoutée, false si elle existe déjà
+	 */
 	//Stop creating node on the fly
 	public boolean addRoad(String srcId, String dstId){
 		if( this.getEdgeId(srcId, dstId) == null ){
@@ -52,6 +74,11 @@ public class Map extends SingleGraph{
 		}
 	}
 	
+	/**
+	 * ajoute l'edge e si elle n'existe pas
+	 * @param e la route à ajouter
+	 * @return la nouvelle route créée, l'ancienne sinon, null si une des deux pièces n'existe pas.
+	 */
 	public Edge addRoad(Edge e){
 		String id = e.getId();
 		String srcId = e.getSourceNode().getId();
@@ -72,6 +99,12 @@ public class Map extends SingleGraph{
 		return newEdge;
 	}
 	
+	/**
+	 * ajoute une pièce avec le nom id si elle n'existe pas.
+	 * @param id le nom de la nouvelle pièce
+	 * @param visited true si cette pièce à été visitée
+	 * @return la nouvelle pièce si elle n'existe pas, l'ancienne sinon
+	 */
 	public Node addRoom(String id, boolean visited){
 		Node n = super.getNode(id);
 		if(n != null){
@@ -83,7 +116,13 @@ public class Map extends SingleGraph{
 		this.updateLayout(n);
 		return n;
 	}
-	
+	/**
+	 * ajoute une pièce avec le nom id et les attributs attr si elle n'existe pas.
+	 * @param id le nom de la nouvelle pièce
+	 * @param visited true si cette pièce à été visitée
+	 * @param attr les attribut pour cette salle
+	 * @return la nouvelle pièce si elle n'existe pas, modifie les attribut de l'ancienne et la renvoi sinon
+	 */
 	public Node addRoom(String id, boolean visited, List<Attribute> attr){
 		Node n = this.addRoom(id, visited);
 		n.addAttribute("treasure#", 0);
@@ -100,6 +139,11 @@ public class Map extends SingleGraph{
 		return n;
 	}
 	
+	/**
+	 * ajoute la pièce n avec ses attributs si elle n'existe pas, modifie les attributs de l'ancienne sinon.
+	 * @param n la salle à ajouter
+	 * @return la nouvelle salle si elle n'existe pas, l'ancienne sinon
+	 */
 	public Node addRoom(Node n){
 		String id = n.getId();
 		Node newNode = super.getNode(id);
@@ -112,12 +156,24 @@ public class Map extends SingleGraph{
 		return newNode;
 	}
 	
+	/**
+	 * Construit le chemin depuis currentPosition jusqu'à la première pièce non visitée.
+	 * @param currentPosition ma position
+	 * @return une liste de pièce à parcourir pour arriver à la première pièce non visitée, null si il n'y en a aucune.
+	 */
 	public ArrayList<String> goTo(String currentPosition){
 		if(checkMapCompleteness())
 			return null;
 		return goTo(currentPosition, null);
 				
 	}
+	
+	/**
+	 * onstruit le chemin depuis currentPosition jusqu'à la destination
+	 * @param currentPosition ma position
+	 * @param dest la salle d'arrivée
+	 * @return le chemin entre ma position et celle souhaitée, null si c'est impossible
+	 */
 	public ArrayList<String> goTo(String currentPosition, String dest){
 		SingleNode mine = this.getNode(currentPosition);
 		ArrayList<SingleNode> file = new ArrayList<SingleNode>();
@@ -179,18 +235,40 @@ public class Map extends SingleGraph{
 		return new ArrayList<String>();
 	}	
 	
+	/**
+	 * renvoi true si la map est totalement visitée.
+	 * @return 
+	 */
 	public boolean checkMapCompleteness(){ // O(# of rooms)...
 		for(Node n : super.getNodeSet()){
-			if(! (Boolean) n.getAttribute("visited?")){
+			if((!n.hasAttribute("well#") || n.hasAttribute("well#") && (int)n.getAttribute("well#") < 3 ) && !(Boolean) n.getAttribute("visited?")){
 				return false;
 			}
 		}
 		return true;
 	}
 	
+	/**
+	 * true si il y a encore un trésor sur la carte.
+	 * @return
+	 */
+	public boolean isTreasure() {
+		for(Node n : super.getNodeSet()){
+			if(n.hasAttribute("treasure#") && (int)n.getAttribute("treasure#") > 0){
+				System.out.println("il reste un trésor en " + n.getId());
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	
-	
+	/**
+	 * vérifie si la route (idSrc, idDst) a été prise au moins une fois.
+	 * @param idSrc le premier noeud
+	 * @param idDst le second
+	 * @return true si la route à été emprunté, false sinon.
+	 */
 	public boolean hasTaken(String idSrc, String idDst){
 		if(this.getEdge(this.getEdgeId(idSrc, idDst)) != null){
 			return this.getEdge(this.getEdgeId(idSrc, idDst)).hasAttribute("ui.class");
@@ -199,6 +277,12 @@ public class Map extends SingleGraph{
 		}
 	}
 	
+	/**
+	 * 
+	 * @param id1 première salle
+	 * @param id2 deuxième salle
+	 * @return l'id de la route entre id1 et id2, null si il n'y a pas de route.
+	 */
 	public String getEdgeId(String id1, String id2){
 		if (super.getEdge(id1+"-"+id2) != null){
 			return id1+"-"+id2;
@@ -208,6 +292,12 @@ public class Map extends SingleGraph{
 		return null;
 	}
 	
+	/**
+	 * liste des route nom prise depuis notre position
+	 * @param lobs observation de l'agent
+	 * @param myPosition ma position
+	 * @return une liste avec l'ensemble des noms des routes non prisent
+	 */
 	public List<String> roadNotTaken(List<Couple<String,List<Attribute>>> lobs, String myPosition){
 		List<String> roadNotTaken = new ArrayList<String>();
 		for(Couple<String,List<Attribute>> c:lobs){
@@ -221,6 +311,12 @@ public class Map extends SingleGraph{
 		return roadNotTaken;
 	}
 	
+	/**
+	 * liste des pièces non visitées depuis notre position
+	 * @param lobs observation de l'agent
+	 * @param myPosition ma position
+	 * @return la liste des pièces non visitées dans notre entourage.
+	 */
 	public List<String> roomNotOpen(List<Couple<String,List<Attribute>>> lobs, String myPosition){
 		List<String> roomNotOpen = new ArrayList<String>();
 		for(Couple<String,List<Attribute>> c:lobs){
@@ -240,6 +336,12 @@ public class Map extends SingleGraph{
 		return roomNotOpen;
 	}
 	
+	/**
+	 * Utilité d'une route. Plus la route à été prise, moins elle est intéressante. si la destination n'a jamais été visitée, utilité maximale (1.0)
+	 * @param src pièce de départ
+	 * @param dst pièce d'arrivée
+	 * @return un nombre entre 0 et 1 correspondant à l'utilité de la route.
+	 */
 	public double getMoveUtility(String src, String dst){
 		Node n = this.getNode(dst);
 		Edge e = this.getEdge(this.getEdgeId(src, dst));
@@ -256,6 +358,12 @@ public class Map extends SingleGraph{
 		return utility;
 	}
 	
+	
+	/**
+	 * met à jour notre à priori sur la position des puits autours de la case pos
+	 * @param pos notre position
+	 * @param obs les observations du HunterAgent
+	 */
 	public void updateWell(String pos, List<Couple<String,List<Attribute>>> obs){
 		List<String> well3 = new ArrayList<String>();
 		for(Couple<String,List<Attribute>> c : obs){
@@ -275,12 +383,17 @@ public class Map extends SingleGraph{
 			this.updateLayout(this.getNode(r));
 		}
 		
-		for(String node : well3)
+		for(String node : well3){
 			isWell(node);
-		
+			this.updateLayout(this.getNode(node));
+		}
 	}
 	
 	
+	/**
+	 * Calcul la force du vent de la case room
+	 * @param room
+	 */
 	public void setWell(String room){
 		Iterator<SingleNode> it = this.getNode(room).getNeighborNodeIterator();
 		int min = 6;
@@ -306,6 +419,12 @@ public class Map extends SingleGraph{
 		
 	}
 	
+	/**
+	 * la force du vent sur cette case.
+	 * <br/>0 si il n'y a pas de vent, 1 et deux si il y a du vent (plus ou moins important), 3 on ne sait pas si il y a un puit, 4 on est sur que c'est un puit.
+	 * @param id le nom de la pièce
+	 * @return un entier entre 0 et 4. 
+	 */
 	public int getWell(String id) {
 		if(this.getNode(id).hasAttribute("well#"))
 			return getNode(id).getAttribute("well#");
@@ -314,6 +433,11 @@ public class Map extends SingleGraph{
 		return 0;
 	}
 	
+	/**
+	 * Detecte si un vent de force 3 (potentiellement un puit) en ai vraiment un.
+	 * @param id nom de la pièce 
+	 * @return true si c'est vraiment un puit, false sinon.
+	 */
 	public boolean isWell(String id){
 
 		Iterator<SingleNode> voisin_1 = this.getNode(id).getNeighborNodeIterator();
@@ -418,5 +542,7 @@ public class Map extends SingleGraph{
 			e.addAttribute("ui.class", "taken2");
 		}
 	}
+
+
 
 }

@@ -1,13 +1,23 @@
-package mas;
+package behaviours;
 
 import java.util.HashMap;
 import java.util.List;
 
+import mas.HunterAgent;
+import mas.Map;
+import mas.SerializationHelper;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
+/**
+ * Récupération des messages de représentation du monde des autres HunterAgent.
+ *<br/>
+ *<br/> Fait parti des comportements de Base du HunterAgent
+ *<br/>
+ *<br/>Cette messagerie est réveillé à la reception d'un message et traite les messages de type INFORM. 
+ */
 public class PullMapBehaviour extends SimpleBehaviour {
 
 	/**

@@ -11,6 +11,12 @@ import env.Attribute;
 import env.Environment.Couple;
 import jade.core.behaviours.OneShotBehaviour;
 
+
+/**
+ * Behaviour faisant partie du comportement de base du HunterAgent.
+ * <br/>
+ * <br/>Permet d'observer son environnement, mettre à jour sa vision du monde et déclencher plusieurs comportement alternatif tels que la recherche de collègue pour rammasser le trésor ou prendre un risque...
+ */
 public class ObserveBehaviour extends OneShotBehaviour {
 	private static final long serialVersionUID = -7959229920398697586L;
 	private HunterAgent agent;
@@ -65,7 +71,7 @@ public class ObserveBehaviour extends OneShotBehaviour {
 		
 		if(agent.isStandBy()){
 			nextState = HunterAgent.STAND_BY;
-		}else if(agent.getNbStep() > nbStepBeforeRisk && risk){
+		}else if(agent.getNbStep() > nbStepBeforeRisk && risk && agent.getMap().checkMapCompleteness() && !agent.getMap().isTreasure()){
 			//ajout d'une proba de lancer le flood pour les limiter??
 			nextState = 3;
 		}

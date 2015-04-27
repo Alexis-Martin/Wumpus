@@ -1,7 +1,9 @@
 package behaviours.flood;
 
 import java.util.HashMap;
-
+/**
+ * Objet flood qui gère le flood pour trouver élire le meilleur pour prendre un risque.
+ */
 public class RiskFlood extends AbstractFlood {
 
 	private RiskFlood(String id, int type){
