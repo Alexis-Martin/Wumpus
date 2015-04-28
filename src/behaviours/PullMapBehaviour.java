@@ -36,15 +36,7 @@ public class PullMapBehaviour extends SimpleBehaviour {
 	@Override
 	public void action() {
 		//1) receive the message
-		final MessageTemplate msgTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
-			//MessageTemplate.and(
-				//MessageTemplate.MatchPerformative(ACLMessage.DISCONFIRM),
-				//MessageTemplate.and(
-				//		MessageTemplate.MatchProtocol(MyOntology.PAXOS_QUIT_COALITION),
-				//		MessageTemplate.and(
-				//				MessageTemplate.MatchLanguage(MyOntology.LANGUAGE),
-				//				MessageTemplate.MatchOntology(MyOntology.ONTOLOGY_NAME))
-				//)
+		final MessageTemplate msgTemplate = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM), MessageTemplate.MatchProtocol("Map"));
 		
 
 		final ACLMessage msg = agent.receive(msgTemplate);

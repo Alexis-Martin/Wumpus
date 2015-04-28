@@ -22,26 +22,33 @@ import jade.lang.acl.MessageTemplate;
  */
 public class FollowExplorerBehaviour extends SimpleBehaviour {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7046436630180209687L;
 	private boolean finished=false;
 	private HunterAgent agent;
+	private long max_time = 2000;
+	private long start;
+	private String nextMove;
 
 	public FollowExplorerBehaviour(HunterAgent a) {
 		super(a);
 		agent = a;
+		start = System.currentTimeMillis();
+		nextMove = agent.getFollowingRoom();
 	}
 
 	@Override
 	public void action() {
 		//on attend le message de l'exploreur
-		final MessageTemplate msgTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM_IF);
-		final ACLMessage msg = agent.receive(msgTemplate);
+		MessageTemplate msgTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM_IF);
+		ACLMessage msg = agent.receive(msgTemplate);
 		if (msg != null){
+			
+			
+			agent.setFollow(false);
 			//si le message est "done, on arrête l'exploration
+			System.out.println("le suiveur " + agent.getLocalName() + " recoit le message " + msg.getContent());
 			if(msg.getContent().equals("done")){
+				System.out.println("c'est terminé je m'en vais");
 				agent.onExploration(false);
 				agent.setStandBy(false);
 				finished = true;
@@ -52,9 +59,36 @@ public class FollowExplorerBehaviour extends SimpleBehaviour {
 			String myPosition = agent.getCurrentPosition();
 			String explorerId = agent.getFollowingId();
 			String explorerPosition = agent.getFollowingRoom();
+			
 			//on se déplace jusqu'a l'ancienne position de l'exploreur
+			System.out.println("le suiveur " + agent.getLocalName() + "se déplace en " + explorerPosition);
+			if(!agent.move(myPosition, nextMove)){
+				
+				System.out.println("le follower n'a pas reussi a se déplacer");
+				List<Couple<String,List<Attribute>>> lobs = agent.observe(myPosition);
+				boolean near_me = false;
+				for(Couple<String, List<Attribute>> attr : lobs){
+					if(attr.getL().equals(explorerPosition)){
+						near_me = true;
+						break;
+					}
+				}
+				if(!near_me){
+					final ACLMessage reply = new ACLMessage(ACLMessage.INFORM_IF);
+					reply.setSender(this.agent.getAID());	
+					reply.addReceiver(new AID(explorerId,  AID.ISLOCALNAME));
+					reply.setContent("done");
+					agent.sendMessage(reply);
+					agent.onExploration(false);
+					agent.setStandBy(false);
+					finished = true;
+					return;
 
-			agent.move(myPosition, explorerPosition);
+				}
+			}
+			else{
+				nextMove = explorerPosition;
+			}
 
 			//on observe notre environement
 			myPosition = agent.getCurrentPosition();
@@ -75,6 +109,7 @@ public class FollowExplorerBehaviour extends SimpleBehaviour {
 			
 				if(pos.equals(explorerPosition)){
 					Node explorerNext = agent.getMap().addRoom(msg.getContent(), false);
+					agent.getDiff().addRoom(explorerNext);
 					if(agent.getMap().addRoad(explorerPosition, explorerNext.getId()))
 						agent.getDiff().addRoad(agent.getMap().getEdge(agent.getMap().getEdgeId(explorerPosition, explorerNext.getId())));
 						
@@ -92,6 +127,7 @@ public class FollowExplorerBehaviour extends SimpleBehaviour {
 			reply.setSender(this.agent.getAID());	
 			reply.addReceiver(new AID(explorerId,  AID.ISLOCALNAME));
 			reply.setContent("OK let's go!");
+			start = System.currentTimeMillis();
 			//send message
 			System.out.println("send message OK let's go! to the explorer " + explorerId);
 			agent.sendMessage(reply);
@@ -99,7 +135,30 @@ public class FollowExplorerBehaviour extends SimpleBehaviour {
 			
 		}
 		else{
-			block();
+			long stop = System.currentTimeMillis();
+			if(stop - start < max_time)
+				block(stop - start);
+			else if(agent.isFollowing()){
+				System.out.println("il n'est plus là");
+				agent.onExploration(false);
+				agent.setStandBy(false);
+				agent.setFollow(false);
+				finished = true;
+				return;
+			}
+			else{
+				System.out.println("he's dead");
+				agent.getMap().well(agent.getFollowingRoom(), true);
+				agent.setAgentDead(agent.getFollowingId());
+				agent.setPushMap(10);
+				agent.getDiff().addRoom(agent.getMap().getNode(agent.getFollowingRoom()));
+				agent.addBehaviour(new ReportDeathBehaviour(agent));
+				agent.pushLoss(10);
+				agent.onExploration(false);
+				agent.setStandBy(false);
+				finished = true;
+				return;
+			}
 		}
 
 	}

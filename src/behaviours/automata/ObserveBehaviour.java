@@ -61,7 +61,7 @@ public class ObserveBehaviour extends OneShotBehaviour {
 				if(agent.getMap().addRoad(myPosition, pos)){
 					agent.getDiff().addRoad(agent.getMap().getEdge(agent.getMap().getEdgeId(myPosition, pos)));
 				}
-				if(n.hasAttribute("well#") && (int) n.getAttribute("well#") == 3){
+				if(n.hasAttribute("well#") && (int) n.getAttribute("well#") == 3 && (!n.hasAttribute("well?") || !(boolean)n.getAttribute("well?"))){
 					risk = true;
 				}
 			}

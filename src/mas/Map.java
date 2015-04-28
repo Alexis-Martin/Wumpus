@@ -1,8 +1,10 @@
 package mas;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
@@ -192,7 +194,7 @@ public class Map extends SingleGraph{
 		      Iterator<SingleNode> it = s.getNeighborNodeIterator();
 		      while(it.hasNext()){
 		    	  SingleNode suivant = it.next();
-		    	  if(!suivant.hasAttribute("well#") || (int)suivant.getAttribute("well#") < 3){
+		    	  if((!suivant.hasAttribute("well#") || (int)suivant.getAttribute("well#") < 3) && (!suivant.hasAttribute("well?") || !(boolean)suivant.getAttribute("well?")) ){
 		    		  
 		    		  if(!suivant.hasAttribute("mark")){
 		    			  file.add(suivant);
@@ -241,7 +243,7 @@ public class Map extends SingleGraph{
 	 */
 	public boolean checkMapCompleteness(){ // O(# of rooms)...
 		for(Node n : super.getNodeSet()){
-			if((!n.hasAttribute("well#") || n.hasAttribute("well#") && (int)n.getAttribute("well#") < 3 ) && !(Boolean) n.getAttribute("visited?")){
+			if((!n.hasAttribute("well#") || n.hasAttribute("well#") && (int)n.getAttribute("well#") < 3 ) && !(Boolean) n.getAttribute("visited?") && (!n.hasAttribute("well?") || !(boolean)n.getAttribute("well?"))){
 				return false;
 			}
 		}
@@ -426,6 +428,8 @@ public class Map extends SingleGraph{
 	 * @return un entier entre 0 et 4. 
 	 */
 	public int getWell(String id) {
+		if(this.getNode(id).hasAttribute("well?"))
+			return 4;
 		if(this.getNode(id).hasAttribute("well#"))
 			return getNode(id).getAttribute("well#");
 		if(this.getNode(id).hasAttribute("wind?") && (boolean) this.getNode(id).getAttribute("wind?"))
@@ -484,6 +488,42 @@ public class Map extends SingleGraph{
 		return false;
 	}
 	
+	/**
+	 * activé lorsqu'un agent meurt dans un puit, un nouvel attribut est ajouté sur ce noeud
+	 * @param room la pièce ou l'agent est mort
+	 * @param b la valeur de l'attribut (true normalement)
+	 */
+	public void well(String room, boolean b) {
+		this.getNode(room).addAttribute("well?", b);
+		this.updateLayout(this.getNode(room));
+	}
+	
+	/**
+	 * la liste des puits où des agents sont morts 
+	 * @return un set<Node> qui correspond à la liste des puits
+	 */
+	public Set<Node> getWells(){
+		Set<Node> retour = new HashSet<Node>();
+		for(Node n : this.getNodeSet()){
+			if(n.hasAttribute("well?") && (boolean)n.getAttribute("well?"))
+				retour.add(n);
+		}
+		return retour;
+	}
+
+	/**
+	 * la liste des puits où des agents ont pris des risques mais sont vivants
+	 * @return un set<Node> qui correspond à la liste des "faux" puits
+	 */
+	public Set<Node> getWrongWells(){
+		Set<Node> retour = new HashSet<Node>();
+		for(Node n : this.getNodeSet()){
+			if(n.hasAttribute("well?") && !(boolean)n.getAttribute("well?"))
+				retour.add(n);
+		}
+		return retour;
+	}
+	
 	public void updateLayout(Node n){
 		this.updateLayout(n, false);
 	}
@@ -503,6 +543,9 @@ public class Map extends SingleGraph{
 		if(n.hasAttribute("well#") && (int)n.getAttribute("well#") > 0){
 			int w = (int)n.getAttribute("well#");
 			classes+= "well"+w+",";
+		}
+		if(n.hasAttribute("well?") && (boolean)n.getAttribute("well?")){
+			classes+= "well"+4+",";
 		}
 		if(marker){
 			classes += "marker,";

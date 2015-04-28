@@ -60,8 +60,8 @@ public class EmptyEnv {
 	public static void main(String[] args){
 		System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 		//0) Create the real environment and the observed one
-		//env= new Environment(ENVtype.DOROGOVTSEV_WT, 40);
-		env= new Environment(ENVtype.GRID_W, 8);
+		env= new Environment(ENVtype.DOROGOVTSEV_WT, 40);
+		//env= new Environment(ENVtype.GRID_W, 5);
 		
 		
 		//1), create the platform (Main container (DF+AMS) + containers + monitoring agents : RMA and SNIFFER)
@@ -109,7 +109,7 @@ public class EmptyEnv {
 		containerList.putAll(createContainers(rt));
 
 		// 3) create monitoring agents : rma agent, used to debug and monitor the platform; sniffer agent, to monitor communications; 
-		createMonitoringAgents(mainContainerRef);
+		//createMonitoringAgents(mainContainerRef);
 
 		System.out.println("Plaform ok");
 		return rt;
@@ -214,7 +214,7 @@ public class EmptyEnv {
 		ContainerController c;
 		String agentName;
 		List<AgentController> agentList=new ArrayList();
-		HashMap<String, String> team;
+		HashMap<String, Boolean> team;
 /*
 		//wumpus on container0
 		c = containerList.get("container0");
@@ -235,11 +235,11 @@ public class EmptyEnv {
 		c = containerList.get("container0");
 		agentName="Alpha";
 		try {
-			team = new HashMap<String, String>();
-			team.put("Bravo", "");
-			team.put("Charlie", "");
-			team.put("Delta", "");
-			team.put("Echo", "");
+			team = new HashMap<String, Boolean>();
+			team.put("Bravo", true);
+			team.put("Charlie", true);
+			team.put("Delta", true);
+			team.put("Echo", true);
 			Object[] objtab=new Object[]{env, team};//used to give informations to the agent
 			AgentController	ag=c.createNewAgent(agentName, HunterAgent.class.getName(),objtab);
 			agentList.add(ag);
@@ -252,11 +252,11 @@ public class EmptyEnv {
 		c = containerList.get("container0");
 		agentName="Bravo";
 		try {
-			team = new HashMap<String, String>();
-			team.put("Alpha", "");
-			team.put("Charlie", "");
-			team.put("Delta", "");
-			team.put("Echo", "");
+			team = new HashMap<String, Boolean>();
+			team.put("Alpha", true);
+			team.put("Charlie", true);
+			team.put("Delta", true);
+			team.put("Echo", true);
 			Object[] objtab=new Object[]{env, team};//used to give informations to the agent
 			AgentController	ag=c.createNewAgent(agentName, HunterAgent.class.getName(),objtab);
 			agentList.add(ag);
@@ -269,11 +269,11 @@ public class EmptyEnv {
 		c = containerList.get("container0");
 		agentName="Charlie";
 		try {
-			team = new HashMap<String, String>();
-			team.put("Alpha", "");
-			team.put("Bravo", "");
-			team.put("Delta", "");
-			team.put("Echo", "");
+			team = new HashMap<String, Boolean>();
+			team.put("Alpha", true);
+			team.put("Bravo", true);
+			team.put("Delta", true);
+			team.put("Echo", true);
 			Object[] objtab=new Object[]{env, team};//used to give informations to the agent
 			AgentController	ag=c.createNewAgent(agentName, HunterAgent.class.getName(),objtab);
 			agentList.add(ag);
@@ -286,11 +286,11 @@ public class EmptyEnv {
 		c = containerList.get("container0");
 		agentName="Delta";
 		try {
-			team = new HashMap<String, String>();
-			team.put("Alpha", "");
-			team.put("Charlie", "");
-			team.put("Bravo", "");
-			team.put("Echo", "");
+			team = new HashMap<String, Boolean>();
+			team.put("Alpha", true);
+			team.put("Charlie", true);
+			team.put("Bravo", true);
+			team.put("Echo", true);
 			Object[] objtab=new Object[]{env, team};//used to give informations to the agent
 			AgentController	ag=c.createNewAgent(agentName, HunterAgent.class.getName(),objtab);
 			agentList.add(ag);
@@ -303,11 +303,11 @@ public class EmptyEnv {
 		c = containerList.get("container0");
 		agentName="Echo";
 		try {
-			team = new HashMap<String, String>();
-			team.put("Alpha", "");
-			team.put("Charlie", "");
-			team.put("Delta", "");
-			team.put("Bravo", "");
+			team = new HashMap<String, Boolean>();
+			team.put("Alpha", true);
+			team.put("Charlie", true);
+			team.put("Delta", true);
+			team.put("Bravo", true);
 			Object[] objtab=new Object[]{env, team};//used to give informations to the agent
 			AgentController	ag=c.createNewAgent(agentName, HunterAgent.class.getName(),objtab);
 			agentList.add(ag);

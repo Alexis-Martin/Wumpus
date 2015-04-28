@@ -4,6 +4,8 @@ package behaviours;
 
 import java.util.List;
 
+import org.graphstream.graph.Node;
+
 import env.Attribute;
 import env.Environment.Couple;
 import mas.HunterAgent;
@@ -19,11 +21,13 @@ public class WaitFollowerBehaviour extends SimpleBehaviour {
 	private static final long serialVersionUID = -1173919798274334761L;
 	private boolean finished = false;
 	private HunterAgent agent;
-	
+	private long max_wait = 15000; //ms
+	private long start;
 
 	public WaitFollowerBehaviour(HunterAgent a) {
 		super(a);
 		agent = a;
+		start = System.currentTimeMillis();
 	}
 
 	@Override
@@ -37,7 +41,8 @@ public class WaitFollowerBehaviour extends SimpleBehaviour {
 			String room = "";
 			//on prend la première pice à 3 dans notre entourage
 			for(Couple<String,List<Attribute>> c : observe){
-				if(agent.getMap().getNode(c.getL()).hasAttribute("well#") && (int)agent.getMap().getNode(c.getL()).getAttribute("well#") == 3){
+				Node n = agent.getMap().getNode(c.getL());
+				if(n.hasAttribute("well#") && (int)n.getAttribute("well#") == 3 && (!n.hasAttribute("well?") || !(boolean)n.getAttribute("well?"))){
 					room = c.getL();
 					break;
 				}
@@ -61,9 +66,18 @@ public class WaitFollowerBehaviour extends SimpleBehaviour {
 			finished = true;
 			agent.setWaitFollower(false);
 			agent.onExploration(true);
+			agent.addBehaviour(new ExplorerBehaviour(agent));
 		}
 		else{
-			block();
+			long end = System.currentTimeMillis();
+			if(end - start < max_wait)
+				block(end-start);
+			else{
+				finished = true;
+				agent.setWaitFollower(false);
+				agent.setStandBy(false);
+				return;
+			}
 		}
 		
 		

@@ -17,10 +17,12 @@ import jade.core.behaviours.OneShotBehaviour;
 public class ExploreBehaviour extends OneShotBehaviour{
 	private HunterAgent agent;
 	private int nextState;
+	private int try_move;
 	
 	public ExploreBehaviour (HunterAgent a){
 		super(a);
 		this.agent = a;
+		try_move = 0;
 	}
 	
 	
@@ -68,12 +70,24 @@ public class ExploreBehaviour extends OneShotBehaviour{
 			if(!agent.move(myPosition, nextMove)){
 				System.out.println(agent.getLocalName()+" waiting for room "+nextMove+" to be released");
 				agent.getStackMove().add(0, nextMove);
+				
+				if(try_move == 10){
+					agent.setRisk(false);
+					agent.getStackMove().clear();
+					nextState = 2;
+					return;
+				}
+				try_move++;
 			}
+			else 
+				try_move = 0;
+
 		}
 		//sinon on affiche une erreur et on repart dans le comportement de base
 		else{
 			System.out.println("Error : room " + nextMove+" is not in the neighborhood of agent "+agent.getLocalName()+ " ("+agent.getCurrentPosition()+")");
 			agent.setRisk(false);
+			agent.getStackMove().clear();
 			nextState = 2;
 			return;
 		}

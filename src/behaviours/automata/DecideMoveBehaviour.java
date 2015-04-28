@@ -76,7 +76,7 @@ public class DecideMoveBehaviour extends OneShotBehaviour {
 			nextState = 2;
 			//on sort de l'état en allant dans l'état stand by et on envoie notre map
 			agent.setStandBy(true);
-			agent.setSinglePush(true);
+			agent.setPushMap(1);
 			return;
 		}
 		

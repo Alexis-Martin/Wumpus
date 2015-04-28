@@ -2,13 +2,17 @@ package mas;
 
 import jade.core.behaviours.FSMBehaviour;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.graphstream.graph.Edge;
+import org.graphstream.graph.Node;
 
+import behaviours.CheckDeathBehaviour;
 import behaviours.PullMapBehaviour;
 import behaviours.PushMapBehaviour;
 import behaviours.automata.DecideMoveBehaviour;
@@ -71,7 +75,7 @@ public class HunterAgent extends abstractAgent {
 
 	private static final long serialVersionUID = -7792554715666014751L;
 	public static final int STAND_BY = 2; //etat stand_by de l'automate
-	private HashMap<String, String> teamMates; //collegues (nom, position)
+	private HashMap<String, Boolean> teamMates; //collegues (nom, vivant?)
 	private Map map; //représentation du monde
 	private Map diff; //ce qui a été découvert depuis le dernier transmit
 	private String nextMove; //prochain déplacement
@@ -87,7 +91,8 @@ public class HunterAgent extends abstractAgent {
 	
 	private HashMap<String, Flood> floods; //floods en cours
 	private int capacity; //taille du sac
-	private boolean singlePush = false;
+	private int pushMap = 0;
+	private int pushLoss = 0;
 	private boolean waitFollower = false; //a été élu pour prendre un risque et attend son suiveur
 	private boolean explorate = false; //en phase d'exploration, vrai si on est exploreur ou suiveur
 	
@@ -101,7 +106,7 @@ public class HunterAgent extends abstractAgent {
 	@SuppressWarnings("unchecked")
 	protected void setup(){
 		super.setup();
-		this.teamMates = new HashMap<String, String>();
+		this.teamMates = new HashMap<String, Boolean>();
 		this.floods = new HashMap<String, Flood>();
 		this.stackMove = new ArrayList<String>();
 		//Map UI settings
@@ -133,7 +138,7 @@ public class HunterAgent extends abstractAgent {
 			System.out.println("Erreur lors du tranfert des parametres");
 		}
 		if(args[1]!=null){
-			this.teamMates = (HashMap<String, String>) args[1];
+			this.teamMates = (HashMap<String, Boolean>) args[1];
 		}
 		
 		map.addNode(this.getCurrentPosition());
@@ -194,7 +199,7 @@ public class HunterAgent extends abstractAgent {
 		addBehaviour(new PushMapBehaviour(this));
 		addBehaviour(new PullMapBehaviour(this));
 		addBehaviour(new CatchFloodBehaviour(this));
-		
+		addBehaviour(new CheckDeathBehaviour(this));
 		nbStep = 0;
 		
 		System.out.println("the agent "+this.getLocalName()+ " is started");
@@ -244,6 +249,7 @@ public class HunterAgent extends abstractAgent {
 			System.out.println(this.getLocalName() + " elected best for the flood "+protocol);
 			if(!this.isStackMoveEmpty()){
 				System.out.println(this.getLocalName()+" is already heading to "+ this.getStackMove().get(this.getStackMove().size()-1));
+				this.removeFlood(protocol);
 				return;
 			}else{
 				if(path.isEmpty()){
@@ -259,6 +265,11 @@ public class HunterAgent extends abstractAgent {
 		//si on a été élu pour prendre un risque
 		else if (f.getType() == Flood.Risk){
 			List<String> path = (List<String>) f.getAttribute("path");
+			if(!this.isStackMoveEmpty() || this.isWaitingFollower() || this.isOnExploration()){
+				System.out.println(this.getLocalName()+" has something to do first!");
+				this.removeFlood(protocol);
+				return;
+			}
 			if(f.hasParent()){
 				System.out.println(this.getLocalName()+" is going on an adventure ! at "+ path.get(path.size() - 1));
 			}else{
@@ -270,17 +281,24 @@ public class HunterAgent extends abstractAgent {
 			this.setStackMove(path);
 		}
 		else if (f.getType() == Flood.Follow){
-		List<String> path = (List<String>) f.getAttribute("path");
-		this.setFollowing((String)f.getAttribute("explorerId"), (String)f.getAttribute("explorerRoom"));
-		if(f.hasParent()){
-			path.remove(path.size() - 1);
-			System.out.println(this.getLocalName()+" is going to follow ! at "+ path.get(path.size() - 1));
-		}else{
-			System.out.println(this.getLocalName()+" is the best to follow and going on adventure ! It's a PROBLEM!!");
+			if(!this.isStackMoveEmpty() || this.isOnExploration()){
+				System.out.println(this.getLocalName()+" has something to do first!");
+				this.removeFlood(protocol);
+				return;
+			}
+			
+			List<String> path = (List<String>) f.getAttribute("path");
+			this.setFollowing((String)f.getAttribute("explorerId"), (String)f.getAttribute("explorerRoom"));
+			if(f.hasParent()){
+				path.remove(path.size() - 1);
+				if(path.size() > 1)
+					System.out.println(this.getLocalName()+" is going to follow ! at "+ path.get(path.size() - 1));
+			}else{
+				System.out.println(this.getLocalName()+" is the best to follow and going on adventure ! It's a PROBLEM!!");
+			}
+			this.setFollow(true);
+			this.setStackMove(path);
 		}
-		this.setFollow(true);
-		this.setStackMove(path);
-	}
 		this.standBy = false;
 		this.removeFlood(protocol);
 	}
@@ -381,11 +399,52 @@ public class HunterAgent extends abstractAgent {
 	}
 	
 	/**
+	 * clear la map envoyer en prenant soins de laisser toutes les pièces où on a pris un risque
+	 */
+	public void clearDiff() {
+		diff.clear();
+		if(this.pushMap > 0){
+			for(Node n : map.getWells()){
+				diff.addRoom(n);
+			}
+			for(Node n : map.getWrongWells()){
+				diff.addRoom(n);
+			}
+		}
+	}
+	
+	public void pushLoss(int i) {
+		pushLoss = i;
+	}
+	public int getPushLoss(){
+		return pushLoss;
+	}
+	
+	public void decreasePushLoss(){
+		pushLoss--;
+	}
+	
+	/**
 	 * 
-	 * @return la liste des collègues du HunterAgent
+	 * @return la liste des collègues vivants du HunterAgent
 	 */
 	public Set<String> getPartners(){
-		return teamMates.keySet();
+		Set<String> retour = new HashSet<String>();
+		for(String partner : teamMates.keySet()){
+			if(teamMates.get(partner)){
+				retour.add(partner);
+			}
+		}
+		return retour;
+		
+	}
+	
+	/**
+	 * Enregistre la mort de l'agent name
+	 * @param name le nom de l'agent qui est mort
+	 */
+	public void setAgentDead(String name){
+		teamMates.put(name, false);
 	}
 
 	/**
@@ -393,10 +452,22 @@ public class HunterAgent extends abstractAgent {
 	 * @return true si on a des collègues avec nous dans le monde
 	 */
 	public boolean hasPartners() {
-		
-		return !teamMates.isEmpty();
+		for(String partner : teamMates.keySet()){
+			if(teamMates.get(partner))
+				return true;
+		}
+		return false;
 	}
 	
+	public void setPartner(String partner, Boolean death) {
+		teamMates.put(partner, death);
+	}
+
+
+	public HashMap<String, Boolean> getAllPartners() {
+		return teamMates;
+	}
+
 
 	/**
 	 * Supprime le flood qui a pour nom protocol
@@ -552,18 +623,22 @@ public class HunterAgent extends abstractAgent {
 
 	/**
 	 * 
-	 * @return aucune idée
+	 * @return le nombre de fois qu'on envoie la map sans condition
 	 */
-	public boolean singlePush() {
-		return singlePush ;
+	public int pushMap() {
+		return pushMap ;
 	}
 
 	/**
 	 * 
-	 * @param b aucune idée
+	 * @param nombre de fois qu'on envoi la map sans condition
 	 */
-	public void setSinglePush(boolean b) {
-		singlePush = b;
+	public void setPushMap(int nb_times) {
+		pushMap = nb_times;
+	}
+	
+	public void decreasePushMap() {
+		pushMap--;
 	}
 
 	/**
@@ -598,4 +673,11 @@ public class HunterAgent extends abstractAgent {
 	public boolean isOnExploration() {
 		return explorate;
 	}
+
+
+
+
+
+
+
 }

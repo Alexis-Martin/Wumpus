@@ -33,8 +33,8 @@ public class PushMapBehaviour extends TickerBehaviour {
 	
 	@Override
 	protected void onTick() {
-		if((((agent.getDiff().getEdgeSet().size() > k || i > 10) && agent.getDiff().getNodeSet().size() > k) || i > k*k) || agent.singlePush()){
-			agent.setSinglePush(false);
+		if((((agent.getDiff().getEdgeSet().size() > k || i > 10) && agent.getDiff().getNodeSet().size() > k) || i > k*k) || agent.pushMap() > 0){
+			agent.decreasePushMap();
 			//update attributes
 			for(Node n : agent.getDiff().getNodeSet()){
 				Node node = agent.getMap().getNode(n.getId());
@@ -49,6 +49,7 @@ public class PushMapBehaviour extends TickerBehaviour {
 			//Send graph update to team mates
 			if(agent.hasPartners()){
 				final ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+				msg.setProtocol("Map");
 				msg.setSender(agent.getAID());
 				for(String aId:agent.getPartners()){
 					msg.addReceiver(new AID(aId, AID.ISLOCALNAME));
@@ -60,7 +61,7 @@ public class PushMapBehaviour extends TickerBehaviour {
 					e.printStackTrace();
 				}
 				agent.send(msg);
-				agent.getDiff().clear();
+				agent.clearDiff();
 				i++;
 			}else{
 				stop();

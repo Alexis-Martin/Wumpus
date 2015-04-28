@@ -34,30 +34,35 @@ public class ExplorerBehaviour extends SimpleBehaviour {
 	@Override
 	public void action() {
 		//on attend un message de type INFORM_IF
-		final MessageTemplate msgTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM_IF);
-		final ACLMessage msg = agent.receive(msgTemplate);
+		MessageTemplate msgTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM_IF);
+		ACLMessage msg = agent.receive(msgTemplate);
 		if (msg != null){
 			//si le message est positif
-			if(msg.equals("OK let's go!")){
+			if(msg.getContent().equals("OK let's go!")){
 				String myPosition = agent.getCurrentPosition();
 				//on se déplace
 				agent.move(myPosition, agent.getNextMove());
-				//si on a plus de position (on est mort)
-				if(agent.getCurrentPosition() == null){
-					System.out.println("je suis mort!!");
+
+				List<Couple<String,List<Attribute>>> lobs;
+				try{
+					myPosition = agent.getCurrentPosition();
+					lobs = agent.observe(myPosition);
+				}
+				catch(NullPointerException e){
+					System.out.println("je suis mort");
 					finished = true;
 					return;
 				}
+				System.out.println(myPosition);
 				
-				//sinon on observe l'environement
-				myPosition = agent.getCurrentPosition();
-				List<Couple<String,List<Attribute>>> lobs = agent.observe(myPosition);
 				
 				agent.getMap().getNode(myPosition).setAttribute("visited?", true);
+				agent.getMap().setWell(myPosition);
 				for(Couple<String,List<Attribute>> c:lobs){
 					String pos = c.getL();
 					if(pos.equals(myPosition)){
 						Node n = agent.getMap().addRoom(pos, true, c.getR());
+						agent.getMap().well(pos, false);
 						agent.getDiff().addRoom(n);
 						agent.getMap().updateLayout(n, true);
 						continue;
@@ -75,7 +80,8 @@ public class ExplorerBehaviour extends SimpleBehaviour {
 				String room = "";
 				//si il y a une pièce qui a une force 3 de puits on y va
 				for(Couple<String,List<Attribute>> c : lobs){
-					if(agent.getMap().getNode(c.getL()).hasAttribute("well#") && (int)agent.getMap().getNode(c.getL()).getAttribute("well#") == 3){
+					Node n = agent.getMap().getNode(c.getL());
+					if(n.hasAttribute("well#") && (int)n.getAttribute("well#") == 3 && (!n.hasAttribute("well?") || !(boolean)n.getAttribute("well?"))){
 						room = c.getL();
 						break;
 					}
@@ -86,16 +92,21 @@ public class ExplorerBehaviour extends SimpleBehaviour {
 				reply.addReceiver(msg.getSender());
 				//si il n'y a pas de pièce comme ça, on arrête l'exploration et on le signale à notre suiveur
 				if(room.equals("")){
+					System.out.println("envoie done à " + msg.getSender().getLocalName());
 					reply.setContent("done");
 					agent.setStandBy(false);
 					agent.onExploration(false);
+					agent.setPushMap(10);
 					finished = true;
 				}
 				//sinon on transmet la prochaine case et on attend à nouveau sa réponse
 				else{
+					System.out.println("envoie le prochain pas " + room + " à " + msg.getSender().getLocalName());					
 					reply.setContent(room);
 					agent.setNextMove(room);
+					agent.setPushMap(1);
 				}
+				
 				agent.sendMessage(reply);
 				
 				

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.graphstream.graph.Node;
 
+import behaviours.FollowExplorerBehaviour;
 import env.Attribute;
 import env.Environment.Couple;
 import mas.HunterAgent;
@@ -22,10 +23,12 @@ public class FollowerBehaviour extends OneShotBehaviour{
 	private static final long serialVersionUID = -8435309021907373359L;
 	private HunterAgent agent;
 	private int nextState;
+	private int try_move;
 	
 	public FollowerBehaviour (HunterAgent a){
 		super(a);
 		this.agent = a;
+		try_move = 0;
 	}
 	
 	
@@ -52,9 +55,9 @@ public class FollowerBehaviour extends OneShotBehaviour{
 			this.agent.sendMessage(msg);
 			
 			
-			agent.setFollow(false);
 			agent.onExploration(true);
 			agent.setStandBy(true);
+			agent.addBehaviour(new FollowExplorerBehaviour(agent));
 			
 			nextState = 1;
 			return;
@@ -87,12 +90,23 @@ public class FollowerBehaviour extends OneShotBehaviour{
 			if(!agent.move(myPosition, nextMove)){
 				System.out.println(agent.getLocalName()+" waiting for room "+nextMove+" to be released");
 				agent.getStackMove().add(0, nextMove);
+				
+				if(try_move == 10){
+					agent.setFollow(false);
+					agent.getStackMove().clear();
+					nextState = 2;
+					return;
+				}
+				try_move++;
 			}
+			else 
+				try_move = 0;
 		}
 		//si on ne peut pas se déplacer on retourne dans le comportement de base
 		else{
 			System.out.println("Error : room " + nextMove+" is not in the neighborhood of agent "+agent.getLocalName()+ " ("+agent.getCurrentPosition()+")");
 			agent.setFollow(false);
+			agent.getStackMove().clear();
 			nextState = 2;
 		}
 		block(1500);
