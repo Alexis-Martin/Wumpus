@@ -67,7 +67,7 @@ public class ObserveBehaviour extends OneShotBehaviour {
 			}
 		}
 		//System.out.println(log);
-		this.block(this.pause);
+		//this.block(this.pause);
 		
 		if(agent.isStandBy()){
 			nextState = HunterAgent.STAND_BY;

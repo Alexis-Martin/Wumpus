@@ -37,7 +37,7 @@ public class SearchFollowerFlood extends AbstractFlood {
 		if(attributes.containsKey("quantity"))
 			quantity = (int)attributes.get("quantity");
 		
-		return capacity - quantity; 
+		return (Math.pow(capacity, 2) - Math.pow(quantity, 2)) > 0 ? (Math.pow(capacity, 2) - Math.pow(quantity, 2)) : 0;
 	}
 	
 	@Override

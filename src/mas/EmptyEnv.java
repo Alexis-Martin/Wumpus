@@ -60,7 +60,7 @@ public class EmptyEnv {
 	public static void main(String[] args){
 		System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 		//0) Create the real environment and the observed one
-		env= new Environment(ENVtype.DOROGOVTSEV_WT, 40);
+		env= new Environment(ENVtype.DOROGOVTSEV_WT, 70);
 		//env= new Environment(ENVtype.GRID_W, 5);
 		
 		

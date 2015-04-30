@@ -14,7 +14,8 @@ public class StandByBehaviour extends OneShotBehaviour {
 	private HunterAgent agent;
 	private int nextState;
 	private final long timeout = 2000;
-	
+
+	public boolean begin = true;
 	public StandByBehaviour(HunterAgent agent){
 		super(agent);
 		this.agent = agent;
@@ -27,6 +28,7 @@ public class StandByBehaviour extends OneShotBehaviour {
 		if(agent.isStandBy()){
 			//Check wumpus...
 			//System.out.println(agent.getLocalName() + " is on stand by");
+				
 			block(this.timeout);
 		}else{
 			if(agent.isTreasure()){

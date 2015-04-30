@@ -34,7 +34,9 @@ public class RiskFlood extends AbstractFlood {
 		if(attributes.containsKey("quantity"))
 			quantity = (int)attributes.get("quantity");
 		
-		return capacity; //TODO: avec uniquement la capa comme utilité, on trouvera toujours un candidat..
+		if(quantity > 0)
+			return 0;
+		return capacity; 
 	}
 	
 	@Override

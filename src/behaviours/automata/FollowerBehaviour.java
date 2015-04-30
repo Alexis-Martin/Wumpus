@@ -109,7 +109,7 @@ public class FollowerBehaviour extends OneShotBehaviour{
 			agent.getStackMove().clear();
 			nextState = 2;
 		}
-		block(1500);
+//		block(1500);
 
 	}
 

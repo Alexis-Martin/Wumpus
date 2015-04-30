@@ -216,6 +216,11 @@ public class HunterAgent extends abstractAgent {
 	
 	@Override
 	public boolean move(String myPosition, String myDestination){
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 		boolean move = super.move(myPosition, myDestination);
 		if(!move){
 			return move;
@@ -270,7 +275,7 @@ public class HunterAgent extends abstractAgent {
 				this.removeFlood(protocol);
 				return;
 			}
-			if(f.hasParent()){
+			if(f.hasParent() && path.size() > 1){
 				System.out.println(this.getLocalName()+" is going on an adventure ! at "+ path.get(path.size() - 1));
 			}else{
 				System.out.println(this.getLocalName()+" is going on an adventure ! ");
@@ -672,6 +677,18 @@ public class HunterAgent extends abstractAgent {
 	 */
 	public boolean isOnExploration() {
 		return explorate;
+	}
+
+	public void reset() {
+		standBy = false;
+		risk = false;
+		follow = false;
+		catchTreasure = false;
+		explorate = false;
+		waitFollower = false;
+		randomWalk = false;
+		floods.clear();
+		
 	}
 
 

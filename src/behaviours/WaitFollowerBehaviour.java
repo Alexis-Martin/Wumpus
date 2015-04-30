@@ -21,7 +21,7 @@ public class WaitFollowerBehaviour extends SimpleBehaviour {
 	private static final long serialVersionUID = -1173919798274334761L;
 	private boolean finished = false;
 	private HunterAgent agent;
-	private long max_wait = 15000; //ms
+	private long max_wait = 10000; //ms
 	private long start;
 
 	public WaitFollowerBehaviour(HunterAgent a) {

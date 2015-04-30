@@ -72,6 +72,7 @@ public class FollowExplorerBehaviour extends SimpleBehaviour {
 						near_me = true;
 						break;
 					}
+					
 				}
 				if(!near_me){
 					final ACLMessage reply = new ACLMessage(ACLMessage.INFORM_IF);
@@ -101,6 +102,11 @@ public class FollowExplorerBehaviour extends SimpleBehaviour {
 				String pos = c.getL();
 				if(pos.equals(myPosition)){
 					agent.getMap().updateLayout(agent.getMap().getNode(pos), true);
+					for(Attribute att : c.getR()){
+						if(att.getName().equals("Treasure") && agent.getBackPackFreeSpace() > 0){
+							agent.pick();
+						}
+					}
 					continue;
 				}
 				

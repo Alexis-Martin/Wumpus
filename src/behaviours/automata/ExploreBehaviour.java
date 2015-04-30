@@ -91,7 +91,7 @@ public class ExploreBehaviour extends OneShotBehaviour{
 			nextState = 2;
 			return;
 		}
-		block(1500);
+		//block(1500);
 		
 		/*
 		nextState = 1;

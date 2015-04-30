@@ -75,6 +75,8 @@ public class CatchEchoBehaviour extends SimpleBehaviour {
 			if(!flood.hasParent() && best == null){	
 				//si il n'y a pas de meilleur (personne n'est élu) on le signale
 				if(flood.getBestValue() == 0){
+					agent.reset();
+
 					System.out.println("Best utility for flood "+ protocol+" is 0. Nobody is elected");
 				}
 				//sinon on est le meilleur (on est élu)

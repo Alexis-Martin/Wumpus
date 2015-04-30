@@ -111,7 +111,7 @@ public class ExplorerBehaviour extends SimpleBehaviour {
 				
 				
 				
-				block(1500);
+			//	block(1500);
 					
 			}
 			else{

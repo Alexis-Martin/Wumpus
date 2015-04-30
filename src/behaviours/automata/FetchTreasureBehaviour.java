@@ -81,7 +81,7 @@ public class FetchTreasureBehaviour extends OneShotBehaviour {
 			nextState = 1;
 			return;
 		}
-		block(1500);
+		//block(1500);
 	}
 
 	@Override
