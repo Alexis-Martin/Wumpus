@@ -41,7 +41,9 @@ public class ExplorerBehaviour extends SimpleBehaviour {
 			if(msg.getContent().equals("OK let's go!")){
 				String myPosition = agent.getCurrentPosition();
 				//on se déplace
-				agent.move(myPosition, agent.getNextMove());
+				if(!agent.move(myPosition, agent.getNextMove())){
+					System.out.println("Explorer "+agent.getLocalName()+" failded to move from "+ myPosition +" to "+agent.getNextMove());
+				}
 
 				List<Couple<String,List<Attribute>>> lobs;
 				try{
@@ -53,11 +55,12 @@ public class ExplorerBehaviour extends SimpleBehaviour {
 					finished = true;
 					return;
 				}
-				System.out.println(myPosition);
+				System.out.println(this.agent.getLocalName()+" is now in " + myPosition);
 				
 				
 				agent.getMap().getNode(myPosition).setAttribute("visited?", true);
 				agent.getMap().setWell(myPosition);
+				//agent.getMap().getNode(myPosition).setAttribute("well#", 2);
 				for(Couple<String,List<Attribute>> c:lobs){
 					String pos = c.getL();
 					if(pos.equals(myPosition)){
@@ -92,7 +95,7 @@ public class ExplorerBehaviour extends SimpleBehaviour {
 				reply.addReceiver(msg.getSender());
 				//si il n'y a pas de pièce comme ça, on arrête l'exploration et on le signale à notre suiveur
 				if(room.equals("")){
-					System.out.println("envoie done à " + msg.getSender().getLocalName());
+					System.out.println(agent.getLocalName()+" envoie done à " + msg.getSender().getLocalName());
 					reply.setContent("done");
 					agent.setStandBy(false);
 					agent.onExploration(false);
@@ -101,7 +104,7 @@ public class ExplorerBehaviour extends SimpleBehaviour {
 				}
 				//sinon on transmet la prochaine case et on attend à nouveau sa réponse
 				else{
-					System.out.println("envoie le prochain pas " + room + " à " + msg.getSender().getLocalName());					
+					System.out.println(agent.getLocalName()+" envoie le prochain pas " + room + " à " + msg.getSender().getLocalName());					
 					reply.setContent(room);
 					agent.setNextMove(room);
 					agent.setPushMap(1);

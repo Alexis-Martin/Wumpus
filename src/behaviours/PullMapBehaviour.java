@@ -41,7 +41,10 @@ public class PullMapBehaviour extends SimpleBehaviour {
 
 		final ACLMessage msg = agent.receive(msgTemplate);
 		if (msg != null) {
-			agent.setStandBy(false); //test
+			if(agent.isSurrounded()){
+				agent.setStandBy(false); //test
+				agent.setSurrounded(false);
+			}
 			HashMap<String, List<String>> info;
 			try {
 				info = (HashMap<String, List<String>>) msg.getContentObject();

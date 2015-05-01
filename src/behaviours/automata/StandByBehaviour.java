@@ -25,7 +25,8 @@ public class StandByBehaviour extends OneShotBehaviour {
 	public void action() {
 
 		this.nextState = 0;
-		if(agent.isStandBy()){
+		if(agent.isStandBy() || agent.isOnExploration()){
+			agent.setStandBy(true);
 			//Check wumpus...
 			//System.out.println(agent.getLocalName() + " is on stand by");
 				
@@ -42,12 +43,15 @@ public class StandByBehaviour extends OneShotBehaviour {
 			}
 			else if (agent.isWaitingFollower()){
 				agent.setStandBy(true);
+				agent.setWaitFollower(false);
 				agent.addBehaviour(new WaitFollowerBehaviour(agent));
-				
 			}
 
 			else
 				this.nextState = 4;
+		}
+		if(!agent.isStandBy()){
+			System.out.println(agent.getLocalName()+" is no longer in StandBy. Next state is "+nextState);
 		}
 	}
 	

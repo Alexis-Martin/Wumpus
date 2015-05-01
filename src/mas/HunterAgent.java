@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 
@@ -95,6 +96,10 @@ public class HunterAgent extends abstractAgent {
 	private int pushLoss = 0;
 	private boolean waitFollower = false; //a été élu pour prendre un risque et attend son suiveur
 	private boolean explorate = false; //en phase d'exploration, vrai si on est exploreur ou suiveur
+	private boolean surrounded = false;
+	
+	private final double tempo = 1000;
+	private double lastMove;
 	
 	/**
 	 * This method is automatically called when "agent".start() is executed.
@@ -106,6 +111,7 @@ public class HunterAgent extends abstractAgent {
 	@SuppressWarnings("unchecked")
 	protected void setup(){
 		super.setup();
+		lastMove = System.currentTimeMillis();
 		this.teamMates = new HashMap<String, Boolean>();
 		this.floods = new HashMap<String, Flood>();
 		this.stackMove = new ArrayList<String>();
@@ -122,7 +128,7 @@ public class HunterAgent extends abstractAgent {
 				 + "node.well3{stroke-mode:plain; stroke-color:orange; stroke-width:3;}"
 		         + "node.well4{stroke-mode:plain; stroke-color:red; stroke-width:3;}";
 		map.addAttribute("ui.stylesheet", stylesheet);
-		if(this.getLocalName().equals("Alpha"))
+		//if(this.getLocalName().equals("Alpha"))
 			map.display();
 //		this.capacity = getBackPackFreeSpace();
 		diff = new Map(this.getLocalName()+"_diff", false);
@@ -190,7 +196,7 @@ public class HunterAgent extends abstractAgent {
 		dispach_behaviour.registerTransition("Explore", "SearchFollower", 1);
 		dispach_behaviour.registerTransition("Explore", "Observe", 2);
 		dispach_behaviour.registerTransition("SearchFollower", "StandBy", 0);
-		dispach_behaviour.registerTransition("SearchFollower", "Decide", 1);
+		dispach_behaviour.registerTransition("SearchFollower", "SearchFollower", 1);
 		dispach_behaviour.registerTransition("Follow", "Follow", 0);
 		dispach_behaviour.registerTransition("Follow", "StandBy", 1);
 		dispach_behaviour.registerTransition("Follow", "Observe", 2);
@@ -216,11 +222,17 @@ public class HunterAgent extends abstractAgent {
 	
 	@Override
 	public boolean move(String myPosition, String myDestination){
+		
+		/*
 		try {
-			Thread.sleep(500);
+			Thread.sleep(1500);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
+		*/
+		
+		this.doWait(1000);
+		
 		boolean move = super.move(myPosition, myDestination);
 		if(!move){
 			return move;
@@ -249,32 +261,34 @@ public class HunterAgent extends abstractAgent {
 	@SuppressWarnings("unchecked") 
 	public void elected(String protocol){
 		Flood f = this.getFlood(protocol);
+		List<String> path = (List<String>) f.getAttribute("path");
+		
+		System.out.println(this.getLocalName() + " elected best for the flood "+protocol);
+		if(!this.isStackMoveEmpty()){
+			System.out.println(this.getLocalName()+" already heading to "+ this.getStackMove().get(this.getStackMove().size()-1));
+			this.removeFlood(protocol);
+			this.setStandBy(false);
+			return;
+		}
+		if(this.isWaitingFollower() || this.isOnExploration() || this.isFollowing()){
+			System.out.println(this.getLocalName()+" has something to do first!");
+			this.removeFlood(protocol);
+			this.standBy = true;
+			return;
+		}
+		
 		if(f.getType() == Flood.TreasureHunt){
-			List<String> path = (List<String>) f.getAttribute("path");
-			System.out.println(this.getLocalName() + " elected best for the flood "+protocol);
-			if(!this.isStackMoveEmpty()){
-				System.out.println(this.getLocalName()+" is already heading to "+ this.getStackMove().get(this.getStackMove().size()-1));
-				this.removeFlood(protocol);
-				return;
+			if(path.isEmpty()){
+				System.out.println(this.getLocalName()+" is going to pick up the treasure");
 			}else{
-				if(path.isEmpty()){
-					System.out.println(this.getLocalName()+" is going to pick up the treasure");
-				}else{
-					System.out.println(this.getLocalName() + " vas prendre le tresor en " + path.get(path.size() - 1));
-					System.out.println(path);
-				}
-				this.setTreasure(true);
-				this.setStackMove(path);
+				System.out.println(this.getLocalName() + " vas prendre le tresor en " + path.get(path.size() - 1));
+				System.out.println(path);
 			}
+			this.setTreasure(true);
+			this.setStackMove(path);
 		}
 		//si on a été élu pour prendre un risque
 		else if (f.getType() == Flood.Risk){
-			List<String> path = (List<String>) f.getAttribute("path");
-			if(!this.isStackMoveEmpty() || this.isWaitingFollower() || this.isOnExploration()){
-				System.out.println(this.getLocalName()+" has something to do first!");
-				this.removeFlood(protocol);
-				return;
-			}
 			if(f.hasParent() && path.size() > 1){
 				System.out.println(this.getLocalName()+" is going on an adventure ! at "+ path.get(path.size() - 1));
 			}else{
@@ -285,14 +299,7 @@ public class HunterAgent extends abstractAgent {
 			//on ajoute la liste des mouvements a effectué pour aller jusqu'à la case ou prendre un risque
 			this.setStackMove(path);
 		}
-		else if (f.getType() == Flood.Follow){
-			if(!this.isStackMoveEmpty() || this.isOnExploration()){
-				System.out.println(this.getLocalName()+" has something to do first!");
-				this.removeFlood(protocol);
-				return;
-			}
-			
-			List<String> path = (List<String>) f.getAttribute("path");
+		else if (f.getType() == Flood.Follow){			
 			this.setFollowing((String)f.getAttribute("explorerId"), (String)f.getAttribute("explorerRoom"));
 			if(f.hasParent()){
 				path.remove(path.size() - 1);
@@ -689,6 +696,14 @@ public class HunterAgent extends abstractAgent {
 		randomWalk = false;
 		floods.clear();
 		
+	}
+
+	public boolean isSurrounded() {
+		return surrounded;
+	}
+
+	public void setSurrounded(boolean surrounded) {
+		this.surrounded = surrounded;
 	}
 
 

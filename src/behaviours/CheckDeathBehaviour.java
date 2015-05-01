@@ -40,8 +40,8 @@ public class CheckDeathBehaviour extends SimpleBehaviour {
 
 		final ACLMessage msg = agent.receive(msgTemplate);
 		if (msg != null) {
-			System.out.println(agent.getLocalName() + " learn the death of ");
 			HashMap<String, Boolean> team;
+			String deadMan = null;
 			try {
 				team = (HashMap<String, Boolean>) msg.getContentObject();
 				boolean lossPartner = false;
@@ -49,12 +49,14 @@ public class CheckDeathBehaviour extends SimpleBehaviour {
 					if(team.containsKey(partner) && !team.get(partner).equals(agent.getAllPartners().get(partner))){
 						lossPartner = true;
 						agent.setPartner(partner, team.get(partner));
+						deadMan = partner;
 					}
 				}
 				
 				if(lossPartner){
-					agent.pushLoss(5);
-					agent.addBehaviour(new ReportDeathBehaviour(agent));
+					System.out.println(agent.getLocalName() + " learn the death of "+deadMan);
+					//agent.pushLoss(5);
+					//agent.addBehaviour(new ReportDeathBehaviour(agent));
 				}
 			} catch (UnreadableException e) {
 				e.printStackTrace();

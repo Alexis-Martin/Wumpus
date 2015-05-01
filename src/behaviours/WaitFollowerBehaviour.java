@@ -73,6 +73,7 @@ public class WaitFollowerBehaviour extends SimpleBehaviour {
 			if(end - start < max_wait)
 				block(end-start);
 			else{
+				System.out.println(agent.getLocalName()+" stoped wainting for follower");
 				finished = true;
 				agent.setWaitFollower(false);
 				agent.setStandBy(false);

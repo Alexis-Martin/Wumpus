@@ -39,7 +39,7 @@ public class ExploreBehaviour extends OneShotBehaviour{
 		//si on a aucun mouvement a faire (on est arrivé, on sort de l'état par la sortie standard)
 		if(nextMove == null){
 			System.out.println(agent.getLocalName()+" arrived in "+myPosition + " and search for a follower");
-			
+			agent.setWaitFollower(true);
 			agent.setRisk(false);
 			nextState = 1;
 			return;
@@ -75,6 +75,7 @@ public class ExploreBehaviour extends OneShotBehaviour{
 					agent.setRisk(false);
 					agent.getStackMove().clear();
 					nextState = 2;
+					System.out.println(agent.getLocalName()+" abandonne sa prise de risque");
 					return;
 				}
 				try_move++;

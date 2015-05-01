@@ -26,6 +26,7 @@ public class SearchFollowerBehaviour extends OneShotBehaviour {
 		nextState = 0;
 		if(agent.isInAFlood()){
 			nextState = 1;
+			block(1000);
 			return;
 		}
 		

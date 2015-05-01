@@ -64,6 +64,10 @@ public class Map extends SingleGraph{
 	 */
 	//Stop creating node on the fly
 	public boolean addRoad(String srcId, String dstId){
+		if(srcId.equals(dstId)){
+			System.out.println("Was trying to create a loop in "+srcId+". Stoped");
+			return false;
+		}
 		if( this.getEdgeId(srcId, dstId) == null ){
 			if(super.getNode(srcId) == null || super.getNode(dstId) == null){
 				System.out.println("Try to create an edge, but at least one node doesn't exist");
@@ -90,7 +94,12 @@ public class Map extends SingleGraph{
 		if(eId == null){
 			if(super.getNode(srcId) == null || super.getNode(dstId) == null){
 				System.out.println("Try to create an edge, but at least one node doesn't exist");
+				return null;
+			}else if(srcId.equals(dstId)){
+				System.out.println("Was trying to create a loop in "+srcId+". Stoped");
+				return null;
 			}
+				
 			newEdge = super.addEdge(id, srcId, dstId, false);
 			for(String attr : e.getAttributeKeySet()){
 				newEdge.addAttribute(attr, e.getAttribute(attr));
@@ -127,7 +136,6 @@ public class Map extends SingleGraph{
 	 */
 	public Node addRoom(String id, boolean visited, List<Attribute> attr){
 		Node n = this.addRoom(id, visited);
-		n.addAttribute("treasure#", 0);
 		for(Attribute a:attr){
 			if(a.getName().equals("Treasure")){
 				n.addAttribute("treasure#", a.getValue());
@@ -255,7 +263,7 @@ public class Map extends SingleGraph{
 	 * @return
 	 */
 	public boolean isTreasure() {
-		for(Node n : super.getNodeSet()){
+		for(Node n : this.getNodeSet()){
 			if(n.hasAttribute("treasure#") && (int)n.getAttribute("treasure#") > 0){
 				System.out.println("il reste un trésor en " + n.getId());
 				return true;
@@ -418,7 +426,7 @@ public class Map extends SingleGraph{
 		
 		
 		this.getNode(room).addAttribute("well#", min+1);
-		
+		this.updateLayout(this.getNode(room));
 	}
 	
 	/**
@@ -540,12 +548,12 @@ public class Map extends SingleGraph{
 		if(n.hasAttribute("treasure#") && (int) n.getAttribute("treasure#") > 0){
 			classes += "treasure,";
 		}
-		if(n.hasAttribute("well#") && (int)n.getAttribute("well#") > 0){
+		if(n.hasAttribute("well?")){
+			if((boolean)n.getAttribute("well?"))
+				classes+= "well"+4+",";
+		}else if(n.hasAttribute("well#") && (int)n.getAttribute("well#") > 0){
 			int w = (int)n.getAttribute("well#");
 			classes+= "well"+w+",";
-		}
-		if(n.hasAttribute("well?") && (boolean)n.getAttribute("well?")){
-			classes+= "well"+4+",";
 		}
 		if(marker){
 			classes += "marker,";

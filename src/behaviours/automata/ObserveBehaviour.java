@@ -40,7 +40,7 @@ public class ObserveBehaviour extends OneShotBehaviour {
 			List<Couple<String,List<Attribute>>> lobs = agent.observe(myPosition);
 			//Update current Room
 			agent.getMap().getNode(myPosition).setAttribute("visited?", true);
-			
+			agent.getMap().getNode(myPosition).setAttribute("treasure#", 0);
 			//Update Map
 			for(Couple<String,List<Attribute>> c:lobs){
 				String pos = c.getL();

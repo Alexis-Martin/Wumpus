@@ -72,7 +72,7 @@ public class CatchEchoBehaviour extends SimpleBehaviour {
 			agent.sendMessage(msgDismiss);
 			
 			//si on a pas de parents et que best est null
-			if(!flood.hasParent() && best == null){	
+			if(!flood.hasParent() && best == null){
 				//si il n'y a pas de meilleur (personne n'est élu) on le signale
 				if(flood.getBestValue() == 0){
 					agent.reset();

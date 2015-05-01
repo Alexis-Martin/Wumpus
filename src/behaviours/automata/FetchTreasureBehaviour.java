@@ -39,9 +39,10 @@ public class FetchTreasureBehaviour extends OneShotBehaviour {
 		
 		//si il n'y a pas de déplacement suivant, on est arrivé. On ramasse et on sort de l'état pour retourner dans le comprotement de base
 		if(nextMove == null){
-			System.out.println(agent.getLocalName()+" picked up a treasure in room "+myPosition);
-			agent.pick();
 			agent.setTreasure(false);
+			if(agent.pick() > 0 ){
+				System.out.println(agent.getLocalName()+" picked up a treasure in room "+myPosition);
+			}
 			nextState = 1;
 			return;
 		}

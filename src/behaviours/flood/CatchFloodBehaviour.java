@@ -26,8 +26,9 @@ public class CatchFloodBehaviour extends SimpleBehaviour {
 		final MessageTemplate msgTemplate = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.PROPAGATE), MessageTemplate.MatchProtocol("flood"));
 		final ACLMessage msg = agent.receive(msgTemplate);
 		if (msg != null) {
+			
 			//si on est en train de faire quelque chose on ne répond pas
-			if(agent.isWaitingFollower() || agent.isOnExploration())
+			if(agent.isOnExploration() || agent.isFollowing())
 				return;
 			
 			//sinon on rentre en standby 

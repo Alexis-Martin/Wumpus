@@ -49,6 +49,7 @@ public class CatchResultBehaviour extends SimpleBehaviour {
 				agent.sendMessage(msgDismiss);
 				//on part
 				agent.removeFlood(protocol);
+				agent.setStandBy(false);
 			}
 			//si on a une réponse positive
 			else{
@@ -106,10 +107,9 @@ public class CatchResultBehaviour extends SimpleBehaviour {
 					}
 					//on retire le flood
 					agent.removeFlood(protocol);
+					agent.setStandBy(false);
 				}
 			}
-			//on part
-			agent.setStandBy(false);
 			finished = true;
 		}else
 			block();

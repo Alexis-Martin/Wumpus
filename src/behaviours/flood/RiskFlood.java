@@ -45,7 +45,7 @@ public class RiskFlood extends AbstractFlood {
 		double best = -1;
 		
 		for(String child: children.keySet()){
-			if(best == -1 || children.get(child) < best){
+			if(children.get(child) > 0 && (best == -1 || children.get(child) < best)){
 				bestChild = child;
 				best = children.get(child);
 			}
@@ -56,7 +56,7 @@ public class RiskFlood extends AbstractFlood {
 	@Override
 	public String getBestId() {
 		String bestChild = getBestChild();
-		if(bestChild != null  && children.get(bestChild) < getMyUtility())
+		if(bestChild != null  && (getMyUtility() <= 0 || children.get(bestChild) < getMyUtility()))
 			return bestChild;
 		return null;
 	}
@@ -64,7 +64,7 @@ public class RiskFlood extends AbstractFlood {
 	@Override
 	public double getBestValue(){
 		String bestChild = getBestChild();
-		if(bestChild != null  && children.get(bestChild) < getMyUtility())
+		if(bestChild != null  && (getMyUtility() <= 0 || children.get(bestChild) < getMyUtility()))
 			return children.get(bestChild);
 		return getMyUtility();
 	}

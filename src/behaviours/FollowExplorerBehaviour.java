@@ -97,16 +97,22 @@ public class FollowExplorerBehaviour extends SimpleBehaviour {
 
 			
 			agent.getMap().getNode(myPosition).setAttribute("visited?", true);
+			agent.getMap().getNode(myPosition).setAttribute("treasure#", 0);
 			//On  met à jour notre représentation du monde
 			for(Couple<String,List<Attribute>> c:lobs){
 				String pos = c.getL();
 				if(pos.equals(myPosition)){
-					agent.getMap().updateLayout(agent.getMap().getNode(pos), true);
+					Node n = agent.getMap().addRoom(pos, true, c.getR());
+					if(n.hasAttribute("treasure#") && (int) n.getAttribute("treasure#") > 0 && agent.getBackPackFreeSpace() > 0){
+						agent.pick();
+					}
+					/*agent.getMap().updateLayout(agent.getMap().getNode(pos), true);
 					for(Attribute att : c.getR()){
 						if(att.getName().equals("Treasure") && agent.getBackPackFreeSpace() > 0){
 							agent.pick();
 						}
 					}
+					*/
 					continue;
 				}
 				
@@ -126,6 +132,8 @@ public class FollowExplorerBehaviour extends SimpleBehaviour {
 				}
 				
 			}
+			agent.getMap().updateWell(myPosition, lobs);
+			
 			//on met à jour la position de l'exploreur
 			agent.setFollowing(explorerId, msg.getContent());
 			//on confirme son déplacement

@@ -1,5 +1,7 @@
 package behaviours.automata;
 
+import java.util.Random;
+
 import mas.HunterAgent;
 import behaviours.flood.Flood;
 import behaviours.flood.RiskFlood;
@@ -15,16 +17,18 @@ public class RiskBehaviour extends OneShotBehaviour {
 	private static final long serialVersionUID = -2397540306361699336L;
 	private HunterAgent agent;
 	private int nextState;
+	private Random r;
 	
 	public RiskBehaviour(HunterAgent a){
 		super(a);
 		this.agent = a;
+		r = new Random();
 	}
 
 	@Override
 	public void action() {
 		nextState = 0;
-		if(agent.isInAFlood()){
+		if(agent.isInAFlood() || r.nextDouble() < 0.6){
 			nextState = 1;
 			return;
 		}

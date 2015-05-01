@@ -10,7 +10,7 @@ import jade.lang.acl.MessageTemplate;
  */
 public class RegisterChildrenBehaviour extends SimpleBehaviour {
 	private static final long serialVersionUID = -6476744038359331843L;
-	private final long timeout = 100; //ms
+	private final long timeout = 500; //ms
 	private boolean finished = false;
 	private HunterAgent agent;
 	private String protocol;
@@ -66,6 +66,7 @@ public class RegisterChildrenBehaviour extends SimpleBehaviour {
 		}
 		//si on a terminer et qu'on a ni enfant, ni parent (on est la racine et tout seul) on ne fait rien, on part
 		else if(finished && !this.agent.getFlood(protocol).hasChild() && !this.agent.getFlood(protocol).hasParent()){
+			System.out.println("Personnes n'a répondu. "+ agent.getFlood(protocol).getId() +" finished.");
 			this.agent.setStandBy(false);
 			this.agent.removeFlood(protocol);
 		}
